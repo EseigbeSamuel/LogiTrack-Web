@@ -36,6 +36,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/context/query-provider"; 
 import { ThemeProvider } from "@/context/theme-provider"; 
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,8 +49,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LogiTrack Admin",
-  description: "Fleet management and tracking system",
+  title: "LogiTrack — Smarter Logistics",
+  description: "Fleet management and shipment tracking, reimagined.",
 };
 
 export default function RootLayout({
@@ -72,6 +73,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster position="top-right" richColors />
           </ThemeProvider>
         </QueryProvider>
       </body>

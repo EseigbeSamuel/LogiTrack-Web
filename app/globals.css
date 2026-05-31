@@ -124,7 +124,450 @@
   body {
     @apply bg-background text-foreground;
   }
-  /* html {
-    @apply font-sans;
-  } */
 }
+
+/* ─────────────────────────────────────────────────────────
+   APPLE LIQUID GLASS — Auth Design System
+   ───────────────────────────────────────────────────────── */
+
+/* Glass design tokens */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-bg-hover: rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-strong: rgba(255, 255, 255, 0.22);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --glass-specular: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 60%, transparent 100%);
+  --auth-accent: #007AFF;
+  --auth-accent-glow: rgba(0, 122, 255, 0.35);
+  --auth-text: rgba(255, 255, 255, 0.92);
+  --auth-text-muted: rgba(255, 255, 255, 0.50);
+  --auth-text-subtle: rgba(255, 255, 255, 0.35);
+
+  /* Orb colors */
+  --orb-1: radial-gradient(circle, rgba(99, 102, 241, 0.55) 0%, transparent 70%);
+  --orb-2: radial-gradient(circle, rgba(0, 122, 255, 0.45) 0%, transparent 70%);
+  --orb-3: radial-gradient(circle, rgba(139, 92, 246, 0.40) 0%, transparent 70%);
+  --orb-4: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, transparent 70%);
+}
+
+/* ── Auth Root Layout ── */
+.auth-root {
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ── Atmospheric Background ── */
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg,
+    #060b18 0%,
+    #0d1526 30%,
+    #111827 55%,
+    #0f172a 75%,
+    #080d1a 100%
+  );
+}
+
+/* Grid overlay — subtle depth */
+.auth-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+
+/* ── Floating Orbs ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 700px;
+  height: 700px;
+  top: -200px;
+  left: -200px;
+  background: var(--orb-1);
+  animation: orbFloat1 18s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 600px;
+  height: 600px;
+  bottom: -150px;
+  right: -100px;
+  background: var(--orb-2);
+  animation: orbFloat2 22s ease-in-out infinite;
+}
+
+.orb-3 {
+  width: 500px;
+  height: 500px;
+  top: 40%;
+  left: 55%;
+  background: var(--orb-3);
+  animation: orbFloat3 26s ease-in-out infinite;
+}
+
+.orb-4 {
+  width: 400px;
+  height: 400px;
+  bottom: 20%;
+  left: 10%;
+  background: var(--orb-4);
+  animation: orbFloat4 20s ease-in-out infinite;
+}
+
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(60px, 40px) scale(1.08); }
+  66%       { transform: translate(-30px, 70px) scale(0.95); }
+}
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%       { transform: translate(-80px, -50px) scale(1.12); }
+  70%       { transform: translate(40px, -90px) scale(0.92); }
+}
+@keyframes orbFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  30%       { transform: translate(50px, -60px) scale(1.06); }
+  65%       { transform: translate(-70px, 40px) scale(1.1); }
+}
+@keyframes orbFloat4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(60px, -40px) scale(1.05); }
+}
+
+/* ── Auth Main ── */
+.auth-main {
+  position: relative;
+  z-index: 10;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* ── Glass Card ── */
+.glass-card {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-border-strong);
+  overflow: hidden;
+  animation: glassEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes glassEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Specular Highlight (top edge light reflection) ── */
+.glass-specular {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: var(--glass-specular);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 24px 24px 0 0;
+}
+
+/* ── Auth Glass Inputs ── */
+.auth-input {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--auth-text) !important;
+  border-radius: 12px !important;
+  height: 48px !important;
+  padding: 0 14px !important;
+  font-size: 0.9375rem !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+}
+
+.auth-input::placeholder {
+  color: var(--auth-text-subtle) !important;
+}
+
+.auth-input:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.auth-input:focus,
+.auth-input:focus-visible {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: var(--auth-accent) !important;
+  box-shadow: 0 0 0 3px var(--auth-accent-glow) !important;
+  outline: none !important;
+}
+
+/* ── Auth Primary Button ── */
+.auth-btn-primary {
+  background: var(--auth-accent) !important;
+  color: #ffffff !important;
+  border: none !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.45) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.auth-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: rgba(255,255,255,0.12);
+  border-radius: 12px 12px 0 0;
+  pointer-events: none;
+}
+
+.auth-btn-primary:hover {
+  background: #0066dd !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 24px rgba(0, 122, 255, 0.55) !important;
+}
+
+.auth-btn-primary:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 10px rgba(0, 122, 255, 0.35) !important;
+}
+
+/* ── Auth Social Button ── */
+.auth-btn-social {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: var(--auth-text) !important;
+  height: 46px !important;
+  border-radius: 12px !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  width: 100% !important;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.auth-btn-social:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.24) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── Auth Divider ── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.auth-divider-text {
+  color: var(--auth-text-subtle);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+}
+
+/* ── Auth Label ── */
+.auth-label {
+  color: var(--auth-text-muted) !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.01em !important;
+  margin-bottom: 6px !important;
+  display: block;
+}
+
+/* ── Input password toggle ── */
+.auth-input-wrapper {
+  position: relative;
+}
+
+.auth-input-wrapper .auth-input {
+  padding-right: 48px !important;
+}
+
+.auth-input-eye {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--auth-text-subtle);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.auth-input-eye:hover {
+  color: var(--auth-text-muted);
+}
+
+/* ── Brand logo ── */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.auth-brand-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.auth-brand-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--auth-text);
+  letter-spacing: -0.02em;
+}
+
+.auth-brand-name span {
+  color: var(--auth-accent);
+}
+
+/* ── Auth heading / subheading ── */
+.auth-heading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--auth-text);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.auth-subheading {
+  font-size: 0.9rem;
+  color: var(--auth-text-muted);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+/* ── Auth footer links ── */
+.auth-footer-link {
+  color: var(--auth-accent) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.auth-footer-link:hover {
+  opacity: 0.8 !important;
+  text-decoration: underline !important;
+}
+
+/* ── OTP Input glass styling ── */
+.auth-otp-slot {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--auth-text);
+  border-radius: 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-otp-slot[data-active] {
+  border-color: var(--auth-accent);
+  box-shadow: 0 0 0 3px var(--auth-accent-glow);
+}
+
+/* ── Checkbox glass style ── */
+.auth-checkbox-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.auth-checkbox-label {
+  font-size: 0.875rem;
+  color: var(--auth-text-muted);
+  user-select: none;
+}
+
+/* ── Success state ── */
+.auth-success-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(0,122,255,0.2) 100%);
+  border: 1px solid rgba(16,185,129,0.35);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: successPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes successPop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Stagger field animation ── */
+.auth-field {
+  animation: fieldIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.auth-field:nth-child(1) { animation-delay: 0.05s; }
+.auth-field:nth-child(2) { animation-delay: 0.10s; }
+.auth-field:nth-child(3) { animation-delay: 0.15s; }
+.auth-field:nth-child(4) { animation-delay: 0.20s; }
+.auth-field:nth-child(5) { animation-delay: 0.25s; }
+.auth-field:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes fieldIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
