@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Package, ArrowRight, Chrome } from "lucide-react";
+import { Eye, EyeOff, Package, ArrowRight, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -77,7 +77,7 @@ export default function SignupPage() {
           className="auth-btn-social"
         >
           <span className="flex items-center gap-2.5">
-            <Chrome size={18} />
+            <Globe size={18} />
             Sign up with Google
           </span>
         </Button>
