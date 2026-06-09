@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   MapPin,
@@ -16,110 +16,144 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useSidebarState } from "@/context/sidebar-context";
+import { useSidebarStore } from "@/store/sidebar-store";
+import { useAuthStore } from "@/store/auth-store";
+import { useNotificationStore } from "@/store/notification-store";
 
 const NAV_ITEMS = [
-  { href: "/dashboard",     icon: LayoutDashboard, label: "Dashboard"     },
-  { href: "/live-map",      icon: MapPin,           label: "Live Map"      },
-  { href: "/vehicle",       icon: Truck,            label: "Fleet"         },
-  { href: "/scheduler",     icon: CalendarClock,    label: "Scheduler"     },
-  { href: "/notification",  icon: Bell,             label: "Notifications" },
-  { href: "/settings",      icon: Settings,         label: "Settings"      },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/live-map", icon: MapPin, label: "Live Map" },
+  { href: "/vehicle", icon: Truck, label: "Fleet" },
+  { href: "/scheduler", icon: CalendarClock, label: "Scheduler" },
+  { href: "/notification", icon: Bell, label: "Notifications" },
+  { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
 export function Sidebar() {
-  const { collapsed, toggle } = useSidebarState();
+  const { collapsed, toggle } = useSidebarStore();
+  const { user, logout } = useAuthStore();
+  const { notifications } = useNotificationStore();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
 
   return (
     <aside
       className={cn(
-        "sidebar-root",
-        collapsed && "sidebar-collapsed"
+        "fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out shadow-sm",
+        collapsed ? "w-[80px]" : "w-[280px]",
       )}
     >
-      {/* ── Logo ── */}
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <Package size={20} color="#fff" strokeWidth={2.3} />
+      {/* Brand Logo */}
+      <div className="flex items-center gap-3 px-6 h-20 overflow-hidden whitespace-nowrap">
+        <div className="shrink-0 flex items-center justify-center w-10 h-10 bg-primary text-primary-foreground rounded-xl shadow-md">
+          <Package size={20} strokeWidth={2.5} />
         </div>
         {!collapsed && (
-          <span className="sidebar-brand">
-            Logi<span>Track</span>
+          <span className="text-xl font-bold tracking-tight text-foreground select-none">
+            Logi<span className="text-primary">Track</span>
           </span>
         )}
       </div>
 
-      {/* ── Divider ── */}
-      <div className="sidebar-divider" />
+      <div className="mx-4 h-px bg-border" />
 
-      {/* ── Nav Items ── */}
-      <nav className="sidebar-nav" aria-label="Main navigation">
+      {/* Nav Items */}
+      <nav
+        className="flex-1 flex flex-col gap-1.5 px-3 py-4 overflow-y-auto select-none"
+        aria-label="Main navigation"
+      >
         {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
               href={href}
-              className={cn("sidebar-nav-item", isActive && "sidebar-nav-item--active")}
+              className={cn(
+                "group relative flex items-center gap-4 px-4 py-3 rounded-full text-[14px] font-medium transition-all duration-200 ease-in-out cursor-pointer",
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+              )}
               title={collapsed ? label : undefined}
             >
-              {isActive && <span className="sidebar-active-bar" aria-hidden="true" />}
               <Icon
-                size={19}
-                strokeWidth={isActive ? 2.2 : 1.8}
-                className="sidebar-nav-icon"
+                size={18}
+                strokeWidth={isActive ? 2.3 : 1.8}
+                className="shrink-0"
               />
-              {!collapsed && (
-                <span className="sidebar-nav-label">{label}</span>
-              )}
-              {/* notification dot for Notifications */}
-              {label === "Notifications" && (
-                <span className="sidebar-badge" aria-label="3 unread" />
+              {!collapsed && <span className="flex-1 truncate">{label}</span>}
+              {label === "Notifications" && unreadCount > 0 && (
+                <span
+                  className={cn(
+                    "flex items-center justify-center text-[10px] font-semibold rounded-full",
+                    collapsed
+                      ? "absolute top-2 right-2 w-2 h-2 bg-destructive"
+                      : "px-2 py-0.5 bg-destructive text-destructive-foreground",
+                  )}
+                >
+                  {!collapsed && unreadCount}
+                </span>
               )}
             </Link>
           );
         })}
       </nav>
 
-      {/* ── Spacer ── */}
-      <div className="flex-1" />
+      <div className="mx-4 h-px bg-border" />
 
-      {/* ── Divider ── */}
-      <div className="sidebar-divider" />
-
-      {/* ── User Section ── */}
-      <div className={cn("sidebar-user", collapsed && "sidebar-user--collapsed")}>
-        <div className="sidebar-avatar" aria-hidden="true">
-          <span>AO</span>
+      {/* User Card */}
+      <div
+        className={cn(
+          "flex items-center gap-3 p-4",
+          collapsed ? "justify-center" : "",
+        )}
+      >
+        <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-semibold text-[14px] border border-primary/20">
+          {user?.fullName
+            ?.split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase() || "AO"}
         </div>
         {!collapsed && (
-          <div className="sidebar-user-info">
-            <p className="sidebar-user-name">Alex Obi</p>
-            <p className="sidebar-user-role">Fleet Manager</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-[14px] font-semibold text-foreground truncate">
+              {user?.fullName || "Alex Obi"}
+            </p>
+            <p className="text-[12px] text-muted-foreground truncate">
+              {user?.role || "Fleet Manager"}
+            </p>
           </div>
         )}
         {!collapsed && (
           <button
-            className="sidebar-logout-btn"
+            onClick={handleLogout}
+            className="shrink-0 p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
             aria-label="Sign out"
             title="Sign out"
           >
-            <LogOut size={15} />
+            <LogOut size={16} />
           </button>
         )}
       </div>
 
-      {/* ── Collapse Toggle ── */}
+      {/* Collapse Toggle Button */}
       <button
         onClick={toggle}
-        className="sidebar-toggle"
+        className="absolute bottom-20 -right-3.5 z-55 flex items-center justify-center w-7 h-7 bg-card border border-border text-foreground hover:bg-accent rounded-full shadow-md cursor-pointer transition-transform duration-200"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {collapsed ? (
-          <ChevronRight size={15} strokeWidth={2.5} />
+          <ChevronRight size={14} strokeWidth={2.5} />
         ) : (
-          <ChevronLeft size={15} strokeWidth={2.5} />
+          <ChevronLeft size={14} strokeWidth={2.5} />
         )}
       </button>
     </aside>

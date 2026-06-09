@@ -16,65 +16,66 @@ interface Props {
   data: ShipmentPoint[];
 }
 
-/* Show every 5th label so they don't overlap */
 function tickFormatter(value: string, index: number) {
   return index % 5 === 0 ? value : "";
 }
 
 export function ShipmentChart({ data }: Props) {
-  /* Only use the last 30 entries */
   const chartData = useMemo(() => data.slice(-30), [data]);
 
   return (
-    <div className="dash-panel" style={{ height: "100%", minHeight: 300 }}>
-      <div className="dash-panel-header">
+    <div className="flex flex-col bg-card border border-border rounded-2xl shadow-sm p-6 flex-1 min-w-0 select-none">
+      <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
-          <p className="dash-panel-title">Shipment Volume</p>
-          <p className="dash-panel-subtitle">Last 30 days</p>
+          <h3 className="text-[15px] font-bold text-foreground">Shipment Volume</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Last 30 days overview</p>
         </div>
-        <button className="dash-panel-action">Export</button>
+        <button className="px-3 py-1.5 text-xs font-semibold bg-accent hover:bg-accent/80 text-foreground border border-border rounded-lg transition-colors cursor-pointer">
+          Export
+        </button>
       </div>
 
-      <div style={{ padding: "16px 8px 8px 0", height: 240 }}>
+      <div className="py-6 h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
-            margin={{ top: 8, right: 16, left: -10, bottom: 0 }}
+            margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
           >
             <defs>
               <linearGradient id="gradShipments" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#007AFF" stopOpacity={0.35} />
-                <stop offset="95%" stopColor="#007AFF" stopOpacity={0}    />
+                <stop offset="5%" stopColor="oklch(0.55 0.15 290)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="oklch(0.55 0.15 290)" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gradDelivered" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor="#10b981" stopOpacity={0.30} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0}    />
+                <stop offset="5%" stopColor="oklch(0.65 0.15 140)" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="oklch(0.65 0.15 140)" stopOpacity={0} />
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(0.85 0.02 290 / 0.3)" />
 
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickFormatter={tickFormatter}
-              tick={{ fontSize: 11 }}
+              tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
-              tick={{ fontSize: 11 }}
-              width={36}
+              tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+              width={40}
             />
 
             <Tooltip
               contentStyle={{
-                background: "rgba(14,18,34,0.95)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: 10,
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                borderRadius: 12,
                 fontSize: "0.8rem",
-                color: "rgba(255,255,255,0.88)",
+                color: "var(--foreground)",
+                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
               }}
               labelStyle={{ fontWeight: 700, marginBottom: 4 }}
             />
@@ -83,53 +84,36 @@ export function ShipmentChart({ data }: Props) {
               type="monotone"
               dataKey="shipments"
               name="Total"
-              stroke="#007AFF"
+              stroke="oklch(0.55 0.15 290)"
               strokeWidth={2}
               fill="url(#gradShipments)"
               dot={false}
-              activeDot={{ r: 4, fill: "#007AFF", strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: "oklch(0.55 0.15 290)", strokeWidth: 0 }}
             />
             <Area
               type="monotone"
               dataKey="delivered"
               name="Delivered"
-              stroke="#10b981"
+              stroke="oklch(0.65 0.15 140)"
               strokeWidth={2}
               fill="url(#gradDelivered)"
               dot={false}
-              activeDot={{ r: 4, fill: "#10b981", strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: "oklch(0.65 0.15 140)", strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
       {/* Legend */}
-      <div
-        style={{
-          display: "flex",
-          gap: 20,
-          padding: "0 20px 16px",
-        }}
-      >
-        {[
-          { color: "#007AFF", label: "Total Shipments" },
-          { color: "#10b981", label: "Delivered" },
-        ].map((l) => (
-          <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: l.color,
-                boxShadow: `0 0 6px ${l.color}80`,
-              }}
-            />
-            <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.50)" }}>
-              {l.label}
-            </span>
-          </div>
-        ))}
+      <div className="flex gap-5 px-2 mt-auto">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-[oklch(0.55_0.15_290)] shadow-sm shadow-purple-500/30" />
+          <span className="text-xs text-muted-foreground font-medium">Total Shipments</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.15_140)] shadow-sm shadow-emerald-500/30" />
+          <span className="text-xs text-muted-foreground font-medium">Delivered</span>
+        </div>
       </div>
     </div>
   );

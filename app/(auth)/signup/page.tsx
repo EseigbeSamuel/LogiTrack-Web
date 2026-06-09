@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Package, ArrowRight, Globe } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { AuthCard } from "@/components/auth/auth-card";
 import { toast } from "sonner";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +29,12 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName || !form.email || !form.password || !form.confirmPassword) {
+    if (
+      !form.fullName ||
+      !form.email ||
+      !form.password ||
+      !form.confirmPassword
+    ) {
       toast.error("Please fill in all fields.");
       return;
     }
@@ -42,7 +49,8 @@ export default function SignupPage() {
     setIsLoading(true);
     await new Promise((r) => setTimeout(r, 1600));
     setIsLoading(false);
-    toast.success("Account created! Please check your email to verify.");
+    toast.success("Account created! Redirecting to login...");
+    router.push("/login");
   };
 
   const handleGoogle = () => {
@@ -50,51 +58,63 @@ export default function SignupPage() {
   };
 
   return (
-    <AuthCard className="w-full max-w-[440px]">
+    <AuthCard className="w-full max-w-[440px] select-none">
       <div className="relative z-10 p-8 flex flex-col gap-5">
-
         {/* Brand */}
-        <div className="auth-brand">
-          <div className="auth-brand-icon">
-            <Package size={22} color="#fff" strokeWidth={2.2} />
+        <div className="flex items-center gap-3 select-none">
+          <div className="flex items-center justify-center w-9 h-9 bg-primary text-primary-foreground rounded-lg shadow-sm">
+            <Package size={18} strokeWidth={2.5} />
           </div>
-          <span className="auth-brand-name">
-            Logi<span>Track</span>
+          <span className="text-lg font-bold text-foreground tracking-tight">
+            Logi<span className="text-primary">Track</span>
           </span>
         </div>
 
         {/* Heading */}
         <div>
-          <h1 className="auth-heading">Create account</h1>
-          <p className="auth-subheading">Start managing your logistics smarter</p>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">
+            Create account
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1 font-medium">
+            Start managing your logistics smarter
+          </p>
         </div>
 
         {/* Social first */}
         <Button
           id="signup-google"
           type="button"
+          variant="outline"
           onClick={handleGoogle}
-          className="auth-btn-social"
+          className="w-full h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-2.5 cursor-pointer border-border hover:bg-accent/40"
         >
-          <span className="flex items-center gap-2.5">
-            <Globe size={18} />
-            Sign up with Google
-          </span>
+          <Globe size={16} className="text-muted-foreground" />
+          Sign up with Google
         </Button>
 
         {/* Divider */}
-        <div className="auth-divider">
-          <div className="auth-divider-line" />
-          <span className="auth-divider-text">or with email</span>
-          <div className="auth-divider-line" />
+        <div className="flex items-center gap-3 py-1">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">
+            or with email
+          </span>
+          <div className="flex-1 h-px bg-border" />
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
-
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4"
+          noValidate
+        >
           {/* Full Name */}
-          <div className="auth-field flex flex-col gap-1.5">
-            <label htmlFor="signup-name" className="auth-label">Full name</label>
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="signup-name"
+              className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider"
+            >
+              Full name
+            </label>
             <Input
               id="signup-name"
               name="fullName"
@@ -103,13 +123,18 @@ export default function SignupPage() {
               placeholder="Jane Smith"
               value={form.fullName}
               onChange={handleChange}
-              className="auth-input"
+              className="h-10 text-xs rounded-xl"
             />
           </div>
 
           {/* Email */}
-          <div className="auth-field flex flex-col gap-1.5">
-            <label htmlFor="signup-email" className="auth-label">Email address</label>
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="signup-email"
+              className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider"
+            >
+              Email address
+            </label>
             <Input
               id="signup-email"
               name="email"
@@ -118,14 +143,19 @@ export default function SignupPage() {
               placeholder="you@company.com"
               value={form.email}
               onChange={handleChange}
-              className="auth-input"
+              className="h-10 text-xs rounded-xl"
             />
           </div>
 
           {/* Password */}
-          <div className="auth-field flex flex-col gap-1.5">
-            <label htmlFor="signup-password" className="auth-label">Password</label>
-            <div className="auth-input-wrapper">
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="signup-password"
+              className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider"
+            >
+              Password
+            </label>
+            <div className="relative">
               <Input
                 id="signup-password"
                 name="password"
@@ -134,28 +164,37 @@ export default function SignupPage() {
                 placeholder="Min. 8 characters"
                 value={form.password}
                 onChange={handleChange}
-                className="auth-input"
+                className="h-10 text-xs rounded-xl pr-10"
               />
               <button
                 type="button"
-                className="auth-input-eye"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword((v) => !v)}
               >
-                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+
             {/* Strength bar */}
             {form.password.length > 0 && (
               <div className="flex gap-1 mt-1">
                 {[...Array(4)].map((_, i) => {
-                  const strength = Math.min(Math.floor(form.password.length / 3), 4);
-                  const colors = ["bg-red-500", "bg-orange-400", "bg-yellow-400", "bg-emerald-400"];
+                  const strength = Math.min(
+                    Math.floor(form.password.length / 3),
+                    4,
+                  );
+                  const colors = [
+                    "bg-red-500",
+                    "bg-orange-400",
+                    "bg-yellow-400",
+                    "bg-emerald-400",
+                  ];
                   return (
                     <div
                       key={i}
                       className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                        i < strength ? colors[strength - 1] : "bg-white/10"
+                        i < strength ? colors[strength - 1] : "bg-muted"
                       }`}
                     />
                   );
@@ -165,9 +204,14 @@ export default function SignupPage() {
           </div>
 
           {/* Confirm Password */}
-          <div className="auth-field flex flex-col gap-1.5">
-            <label htmlFor="signup-confirm" className="auth-label">Confirm password</label>
-            <div className="auth-input-wrapper">
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="signup-confirm"
+              className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider"
+            >
+              Confirm password
+            </label>
+            <div className="relative">
               <Input
                 id="signup-confirm"
                 name="confirmPassword"
@@ -176,62 +220,76 @@ export default function SignupPage() {
                 placeholder="Re-enter your password"
                 value={form.confirmPassword}
                 onChange={handleChange}
-                className="auth-input"
+                className="h-10 text-xs rounded-xl pr-10"
               />
               <button
                 type="button"
-                className="auth-input-eye"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                 aria-label={showConfirm ? "Hide password" : "Show password"}
                 onClick={() => setShowConfirm((v) => !v)}
               >
-                {showConfirm ? <EyeOff size={17} /> : <Eye size={17} />}
+                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
 
           {/* Terms */}
-          <div className="auth-field auth-checkbox-wrap">
+          <div className="flex items-start gap-2">
             <Checkbox
               id="signup-terms"
               checked={agreed}
               onCheckedChange={(v) => setAgreed(Boolean(v))}
-              className="border-white/20 data-checked:bg-[#007AFF] data-checked:border-[#007AFF] data-checked:text-white"
+              className="rounded-md border-muted-foreground/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary mt-0.5"
             />
-            <label htmlFor="signup-terms" className="auth-checkbox-label cursor-pointer">
+            <label
+              htmlFor="signup-terms"
+              className="text-xs text-muted-foreground font-semibold cursor-pointer leading-normal"
+            >
               I agree to the{" "}
-              <a href="#" className="auth-footer-link">Terms of Service</a>
-              {" "}and{" "}
-              <a href="#" className="auth-footer-link">Privacy Policy</a>
+              <a
+                href="#"
+                className="font-semibold text-primary hover:underline"
+              >
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a
+                href="#"
+                className="font-semibold text-primary hover:underline"
+              >
+                Privacy Policy
+              </a>
             </label>
           </div>
 
           {/* Submit */}
-          <div className="auth-field">
-            <Button
-              id="signup-submit"
-              type="submit"
-              disabled={isLoading}
-              className="auth-btn-primary"
-            >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Creating account…
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  Create account
-                  <ArrowRight size={16} />
-                </span>
-              )}
-            </Button>
-          </div>
+          <Button
+            id="signup-submit"
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10 mt-2"
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <span className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                Creating account...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                Create account
+                <ArrowRight size={15} />
+              </span>
+            )}
+          </Button>
         </form>
 
         {/* Footer */}
-        <p className="text-center auth-subheading mt-0">
+        <p className="text-center text-xs text-muted-foreground font-medium mt-1">
           Already have an account?{" "}
-          <Link href="/login" className="auth-footer-link">
+          <Link
+            href="/login"
+            className="font-semibold text-primary hover:underline"
+          >
             Sign in
           </Link>
         </p>

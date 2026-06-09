@@ -8,6 +8,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import type { StatCard } from "@/types/dashboard";
+import { cn } from "@/lib/utils";
 
 const ICON_MAP = {
   Package,
@@ -17,10 +18,30 @@ const ICON_MAP = {
 } as Record<string, React.ElementType>;
 
 const COLOR_CONFIG = {
-  blue:    { glow: "#007AFF", icon: "rgba(0,122,255,0.18)",   text: "#60a5fa" },
-  emerald: { glow: "#10b981", icon: "rgba(16,185,129,0.18)",  text: "#34d399" },
-  violet:  { glow: "#8b5cf6", icon: "rgba(139,92,246,0.18)",  text: "#a78bfa" },
-  amber:   { glow: "#f59e0b", icon: "rgba(245,158,11,0.18)",  text: "#fbbf24" },
+  blue: {
+    bg: "bg-blue-500/10 dark:bg-blue-500/5",
+    border: "border-blue-500/20",
+    text: "text-blue-600 dark:text-blue-400",
+    iconBg: "bg-blue-500/20 dark:bg-blue-500/10",
+  },
+  emerald: {
+    bg: "bg-emerald-500/10 dark:bg-emerald-500/5",
+    border: "border-emerald-500/20",
+    text: "text-emerald-600 dark:text-emerald-400",
+    iconBg: "bg-emerald-500/20 dark:bg-emerald-500/10",
+  },
+  violet: {
+    bg: "bg-violet-500/10 dark:bg-violet-500/5",
+    border: "border-violet-500/20",
+    text: "text-violet-600 dark:text-violet-400",
+    iconBg: "bg-violet-500/20 dark:bg-violet-500/10",
+  },
+  amber: {
+    bg: "bg-amber-500/10 dark:bg-amber-500/5",
+    border: "border-amber-500/20",
+    text: "text-amber-600 dark:text-amber-400",
+    iconBg: "bg-amber-500/20 dark:bg-amber-500/10",
+  },
 };
 
 interface StatCardProps {
@@ -29,40 +50,45 @@ interface StatCardProps {
 
 export function StatCardWidget({ card }: StatCardProps) {
   const Icon = ICON_MAP[card.icon] ?? Package;
-  const cfg  = COLOR_CONFIG[card.color];
+  const cfg = COLOR_CONFIG[card.color];
   const isUp = card.trend >= 0;
 
   return (
-    <div className="stat-card">
+    <div className={cn(
+      "relative overflow-hidden p-6 rounded-2xl border border-border bg-card shadow-sm hover:shadow-md transition-all duration-300 group",
+      cfg.bg
+    )}>
       {/* Background glow orb */}
-      <div
-        className="stat-card-glow"
-        style={{ background: cfg.glow }}
-        aria-hidden="true"
-      />
+      <div className={cn(
+        "absolute -right-10 -top-10 w-28 h-28 rounded-full blur-2xl opacity-20 dark:opacity-10 group-hover:scale-125 transition-transform duration-500",
+        card.color === "blue" && "bg-blue-500",
+        card.color === "emerald" && "bg-emerald-500",
+        card.color === "violet" && "bg-violet-500",
+        card.color === "amber" && "bg-amber-500"
+      )} />
 
       {/* Top row: icon + trend */}
-      <div className="stat-card-top">
-        <div
-          className="stat-card-icon"
-          style={{ background: cfg.icon }}
-        >
-          <Icon size={18} color={cfg.text} strokeWidth={2.2} />
+      <div className="flex items-center justify-between">
+        <div className={cn("flex items-center justify-center w-10 h-10 rounded-xl", cfg.iconBg)}>
+          <Icon size={18} className={cfg.text} strokeWidth={2.3} />
         </div>
-        <div className={`stat-card-trend ${isUp ? "stat-card-trend--up" : "stat-card-trend--down"}`}>
-          {isUp ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+        <div className={cn(
+          "flex items-center gap-1 text-[13px] font-semibold px-2 py-0.5 rounded-full select-none",
+          isUp
+            ? "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-500/5"
+            : "text-destructive bg-destructive/10 dark:bg-destructive/5"
+        )}>
+          {isUp ? <TrendingUp size={13} strokeWidth={2.5} /> : <TrendingDown size={13} strokeWidth={2.5} />}
           {Math.abs(card.trend)}%
         </div>
       </div>
 
-      {/* Label */}
-      <p className="stat-card-label">{card.label}</p>
-
-      {/* Value */}
-      <p className="stat-card-value">{card.value}</p>
-
-      {/* Trend label */}
-      <p className="stat-trend-label">{card.trendLabel}</p>
+      {/* Content */}
+      <div className="mt-4 select-none">
+        <p className="text-[13px] font-medium text-muted-foreground">{card.label}</p>
+        <p className="text-2xl font-bold tracking-tight text-foreground mt-1 select-all">{card.value}</p>
+        <p className="text-[11px] font-medium text-muted-foreground/80 mt-1">{card.trendLabel}</p>
+      </div>
     </div>
   );
 }

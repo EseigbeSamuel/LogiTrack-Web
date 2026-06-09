@@ -1,103 +1,134 @@
 "use client";
 
-import { Activity, Zap } from "lucide-react";
+import { Activity, Plus, Truck, MapPin, BarChart3 } from "lucide-react";
 import { StatCardWidget } from "@/components/dashboard/stat-card";
 import { ShipmentChart } from "@/components/dashboard/shipment-chart";
 import { DeliveryDonut } from "@/components/dashboard/delivery-donut";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { FleetStatus } from "@/components/dashboard/fleet-status";
-import {
-  statCards,
-  shipmentTrend,
-  deliveryStatus,
-  fleetVehicles,
-  activityFeed,
-} from "@/lib/mock-data";
+import { apiClient } from "@/lib/api-client";
+import { useQuery } from "@tanstack/react-query";
+import type { ActivityEvent } from "@/types/dashboard";
 
 export default function DashboardPage() {
-  return (
-    <div className="dash-page">
+  // ── Queries ──
+  const { data: stats = [], isLoading: statsLoading } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: apiClient.getDashboardStats,
+  });
 
-      {/* ── Welcome bar ── */}
-      <div className="dash-welcome">
-        <div className="dash-welcome-text">
-          <h2>Good evening, Alex 👋</h2>
-          <p>Here&apos;s what&apos;s happening across your fleet today.</p>
+  const { data: trend = [], isLoading: trendLoading } = useQuery({
+    queryKey: ["shipment-trend"],
+    queryFn: apiClient.getShipmentTrend,
+  });
+
+  const { data: statusBreakdown = [], isLoading: statusLoading } = useQuery({
+    queryKey: ["delivery-status"],
+    queryFn: apiClient.getDeliveryStatus,
+  });
+
+  const { data: vehicles = [], isLoading: vehiclesLoading } = useQuery({
+    queryKey: ["vehicles"],
+    queryFn: apiClient.getVehicles,
+  });
+
+  const { data: notifications = [], isLoading: notifsLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: apiClient.getNotifications,
+  });
+
+  // Map notifications to ActivityEvents for the feed
+  const activityFeed: ActivityEvent[] = notifications.map((n) => {
+    let type: ActivityEvent["type"] = "alert";
+    if (n.type === "success") type = "delivered";
+    else if (n.type === "warning") type = "alert";
+    else if (n.type === "error") type = "delayed";
+    else if (n.title.toLowerCase().includes("assign")) type = "assigned";
+    else if (n.title.toLowerCase().includes("depart")) type = "departed";
+    else if (n.title.toLowerCase().includes("maintenance")) type = "maintenance";
+
+    return {
+      id: n.id,
+      type,
+      title: n.title,
+      description: n.message,
+      timestamp: n.timestamp,
+    };
+  });
+
+  const isPageLoading = statsLoading || trendLoading || statusLoading || vehiclesLoading || notifsLoading;
+
+  if (isPageLoading) {
+    return (
+      <div className="flex flex-col gap-6 select-none animate-pulse">
+        {/* Welcome skeleton */}
+        <div className="h-14 bg-accent/30 rounded-2xl w-1/3" />
+        {/* KPIs skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 bg-accent/20 border border-border/50 rounded-2xl" />
+          ))}
         </div>
-        <div className="dash-welcome-badge">
-          <Activity size={14} />
-          Live
+        {/* Charts skeleton */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="h-80 bg-accent/20 border border-border/50 rounded-2xl flex-1" />
+          <div className="h-80 bg-accent/20 border border-border/50 rounded-2xl w-full lg:w-[360px]" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-6 select-none">
+      {/* Welcome Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-border bg-card rounded-2xl shadow-sm">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">Good evening, Alex 👋</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Here is what is happening across your fleet today.</p>
+        </div>
+        <div className="flex items-center gap-1.5 self-start sm:self-auto text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 select-none animate-pulse">
+          <Activity size={12} strokeWidth={2.5} />
+          Live Fleet Active
         </div>
       </div>
 
-      {/* ── KPI Stat Cards ── */}
-      <div className="dash-kpi-grid">
-        {statCards.map((card) => (
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((card) => (
           <StatCardWidget key={card.id} card={card} />
         ))}
       </div>
 
-      {/* ── Charts Row ── */}
-      <div className="dash-charts-row">
-        <ShipmentChart data={shipmentTrend} />
-        <DeliveryDonut data={deliveryStatus} />
+      {/* Charts Row */}
+      <div className="flex flex-col lg:flex-row gap-6 items-stretch">
+        <ShipmentChart data={trend} />
+        <DeliveryDonut data={statusBreakdown} />
       </div>
 
-      {/* ── Bottom Row ── */}
-      <div className="dash-bottom-row">
+      {/* Bottom Lists Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivityFeed events={activityFeed} />
-        <FleetStatus vehicles={fleetVehicles} />
+        <FleetStatus vehicles={vehicles} />
       </div>
 
-      {/* ── Quick Actions ── */}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-          padding: "4px 0 8px",
-        }}
-      >
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-3 p-4 border border-border bg-card rounded-2xl shadow-sm">
         {[
-          { icon: "📦", label: "New Shipment",  color: "#007AFF" },
-          { icon: "🚛", label: "Assign Vehicle", color: "#10b981" },
-          { icon: "📍", label: "Track Order",    color: "#8b5cf6" },
-          { icon: "📊", label: "Run Report",     color: "#f59e0b" },
+          { icon: <Plus size={16} />, label: "New Shipment", href: "/scheduler", color: "bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400" },
+          { icon: <Truck size={16} />, label: "Assign Vehicle", href: "/vehicle", color: "bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400" },
+          { icon: <MapPin size={16} />, label: "Track Fleet", href: "/live-map", color: "bg-violet-500/10 hover:bg-violet-500/20 border-violet-500/30 text-violet-600 dark:text-violet-400" },
+          { icon: <BarChart3 size={16} />, label: "Run Report", href: "/settings", color: "bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30 text-amber-600 dark:text-amber-400" },
         ].map((action) => (
           <button
             key={action.label}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "10px 18px",
-              borderRadius: 12,
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.10)",
-              color: "rgba(255,255,255,0.88)",
-              fontSize: "0.875rem",
-              fontWeight: 600,
-              cursor: "pointer",
-              backdropFilter: "blur(12px)",
-              transition: "background 0.2s, border-color 0.2s, transform 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = `${action.color}18`;
-              (e.currentTarget as HTMLButtonElement).style.borderColor = `${action.color}40`;
-              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.05)";
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.10)";
-              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-            }}
+            onClick={() => (window.location.href = action.href)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer ${action.color}`}
           >
-            <span>{action.icon}</span>
+            {action.icon}
             {action.label}
           </button>
         ))}
       </div>
-
     </div>
   );
 }

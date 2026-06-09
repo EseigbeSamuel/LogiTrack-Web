@@ -1,0 +1,58 @@
+import type { NotificationItem } from "@/types/notification";
+
+export const recentNotifications: NotificationItem[] = [
+  {
+    id: "n-001",
+    type: "success",
+    title: "Shipment delivered",
+    message: "Shipment #SHP-8821 was successfully delivered to Abuja Depot by Marcus Webb.",
+    timestamp: "2 min ago",
+    read: false,
+    category: "delivery",
+  },
+  {
+    id: "n-002",
+    type: "warning",
+    title: "Traffic delay alert",
+    message: "Vehicle LGT-2290 is experiencing heavy delays on the Lagos–Ibadan Expressway.",
+    timestamp: "34 min ago",
+    read: false,
+    category: "fleet",
+  },
+  {
+    id: "n-003",
+    type: "error",
+    title: "Critical fuel level",
+    message: "Vehicle LGT-7701 is currently idle at Kano Depot with fuel level below 15%.",
+    timestamp: "4h ago",
+    read: false,
+    category: "fleet",
+  },
+  {
+    id: "n-004",
+    type: "info",
+    title: "New shipment assigned",
+    message: "Shipment #SHP-8922 has been assigned to driver Marcus Webb for dispatch tomorrow.",
+    timestamp: "1h ago",
+    read: true,
+    category: "delivery",
+  },
+  {
+    id: "n-005",
+    type: "info",
+    title: "Scheduled vehicle maintenance",
+    message: "Vehicle LGT-5512 is undergoing routine 10,000km maintenance check at Lagos Depot.",
+    timestamp: "2h ago",
+    read: true,
+    category: "system",
+  },
+  {
+    id: "n-006",
+    type: "success",
+    title: "Driver check-in complete",
+    message: "Driver Aisha Bello checked in at Enugu Terminal ahead of schedule.",
+    timestamp: "5h ago",
+    read: true,
+    category: "fleet",
+  },
+];

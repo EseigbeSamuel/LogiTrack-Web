@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Package,
   ArrowLeft,
@@ -19,6 +20,7 @@ import { toast } from "sonner";
 type Step = "email" | "otp" | "success";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [step, setStep] = useState<Step>("email");
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -45,7 +47,10 @@ export default function ForgotPasswordPage() {
     setResendCooldown(60);
     const interval = setInterval(() => {
       setResendCooldown((v) => {
-        if (v <= 1) { clearInterval(interval); return 0; }
+        if (v <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
         return v - 1;
       });
     }, 1000);
@@ -74,16 +79,16 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <AuthCard className="w-full max-w-[420px]">
+    <AuthCard className="w-full max-w-[420px] select-none">
       <div className="relative z-10 p-8 flex flex-col gap-6">
-
+        
         {/* Brand */}
-        <div className="auth-brand">
-          <div className="auth-brand-icon">
-            <Package size={22} color="#fff" strokeWidth={2.2} />
+        <div className="flex items-center gap-3 select-none">
+          <div className="flex items-center justify-center w-9 h-9 bg-primary text-primary-foreground rounded-lg shadow-sm">
+            <Package size={18} strokeWidth={2.5} />
           </div>
-          <span className="auth-brand-name">
-            Logi<span>Track</span>
+          <span className="text-lg font-bold text-foreground tracking-tight">
+            Logi<span className="text-primary">Track</span>
           </span>
         </div>
 
@@ -91,31 +96,22 @@ export default function ForgotPasswordPage() {
         {step === "email" && (
           <>
             <div>
-              <h1 className="auth-heading">Reset password</h1>
-              <p className="auth-subheading">
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Reset password</h1>
+              <p className="text-xs text-muted-foreground mt-1 font-medium">
                 Enter your email and we&apos;ll send you a verification code.
               </p>
             </div>
 
             {/* Email icon */}
-            <div
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: 16,
-                background: "linear-gradient(135deg, rgba(0,122,255,0.15) 0%, rgba(88,86,214,0.15) 100%)",
-                border: "1px solid rgba(0,122,255,0.25)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Mail size={24} color="#007AFF" />
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+              <Mail size={20} strokeWidth={2} />
             </div>
 
-            <form onSubmit={handleSendLink} className="flex flex-col gap-4" noValidate>
-              <div className="auth-field flex flex-col gap-1.5">
-                <label htmlFor="forgot-email" className="auth-label">Email address</label>
+            <form onSubmit={handleSendLink} className="flex flex-col gap-4.5" noValidate>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="forgot-email" className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Email address
+                </label>
                 <Input
                   id="forgot-email"
                   name="email"
@@ -124,35 +120,33 @@ export default function ForgotPasswordPage() {
                   placeholder="you@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="auth-input"
+                  className="h-10 text-xs rounded-xl"
                 />
               </div>
 
-              <div className="auth-field">
-                <Button
-                  id="forgot-send"
-                  type="submit"
-                  disabled={isLoading}
-                  className="auth-btn-primary"
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Sending code…
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      Send verification code
-                      <ArrowRight size={16} />
-                    </span>
-                  )}
-                </Button>
-              </div>
+              <Button
+                id="forgot-send"
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10"
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    Sending code...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Send verification code
+                    <ArrowRight size={15} />
+                  </span>
+                )}
+              </Button>
             </form>
 
-            <p className="text-center auth-subheading mt-0">
-              <Link href="/login" className="auth-footer-link inline-flex items-center gap-1">
-                <ArrowLeft size={14} />
+            <p className="text-center text-xs text-muted-foreground font-medium mt-1">
+              <Link href="/login" className="font-semibold text-primary hover:underline inline-flex items-center gap-1.5">
+                <ArrowLeft size={13} />
                 Back to sign in
               </Link>
             </p>
@@ -163,18 +157,15 @@ export default function ForgotPasswordPage() {
         {step === "otp" && (
           <>
             <div>
-              <h1 className="auth-heading">Check your email</h1>
-              <p className="auth-subheading">
-                We sent a 6-digit code to{" "}
-                <span style={{ color: "var(--auth-text)", fontWeight: 500 }}>
-                  {email}
-                </span>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Check your email</h1>
+              <p className="text-xs text-muted-foreground mt-1 font-medium">
+                We sent a 6-digit code to <strong className="text-foreground font-semibold">{email}</strong>
               </p>
             </div>
 
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6" noValidate>
               {/* OTP slots */}
-              <div className="auth-field flex justify-center">
+              <div className="flex justify-center py-2">
                 <InputOTP
                   maxLength={6}
                   value={otp}
@@ -185,67 +176,57 @@ export default function ForgotPasswordPage() {
                       <InputOTPSlot
                         key={i}
                         index={i}
-                        className="auth-otp-slot w-11 h-12"
+                        className="w-10 h-11 text-xs rounded-xl border border-border text-center font-bold"
                       />
                     ))}
                   </InputOTPGroup>
                 </InputOTP>
               </div>
 
-              <div className="auth-field">
-                <Button
-                  id="forgot-verify"
-                  type="submit"
-                  disabled={isLoading || otp.length < 6}
-                  className="auth-btn-primary"
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Verifying…
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      Verify code
-                      <ArrowRight size={16} />
-                    </span>
-                  )}
-                </Button>
-              </div>
+              <Button
+                id="forgot-verify"
+                type="submit"
+                disabled={isLoading || otp.length < 6}
+                className="w-full h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10"
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="size-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    Verifying...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Verify code
+                    <ArrowRight size={15} />
+                  </span>
+                )}
+              </Button>
             </form>
 
             {/* Resend */}
             <div className="text-center">
-              <p className="auth-subheading mt-0">
+              <p className="text-xs text-muted-foreground font-medium mt-1">
                 Didn&apos;t receive a code?{" "}
                 <button
                   type="button"
                   id="forgot-resend"
                   onClick={handleResend}
                   disabled={resendCooldown > 0}
-                  className="auth-footer-link inline-flex items-center gap-1"
-                  style={{
-                    opacity: resendCooldown > 0 ? 0.5 : 1,
-                    cursor: resendCooldown > 0 ? "not-allowed" : "pointer",
-                    background: "none",
-                    border: "none",
-                    padding: 0,
-                  }}
+                  className="font-semibold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <RefreshCw size={13} />
+                  <RefreshCw size={12} className={resendCooldown > 0 ? "" : "animate-spin-slow"} />
                   {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
                 </button>
               </p>
             </div>
 
-            <p className="text-center auth-subheading mt-0">
+            <p className="text-center text-xs text-muted-foreground font-medium mt-1">
               <button
                 type="button"
                 onClick={() => setStep("email")}
-                className="auth-footer-link inline-flex items-center gap-1"
-                style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                className="font-semibold text-primary hover:underline inline-flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0"
               >
-                <ArrowLeft size={14} />
+                <ArrowLeft size={13} />
                 Change email
               </button>
             </p>
@@ -254,26 +235,25 @@ export default function ForgotPasswordPage() {
 
         {/* ──────────── STEP 3: Success ──────────── */}
         {step === "success" && (
-          <div className="flex flex-col items-center gap-6 py-4 text-center">
-            <div className="auth-success-icon">
-              <CheckCircle2 size={32} color="#10b981" />
+          <div className="flex flex-col items-center gap-5 py-4 text-center">
+            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 size={24} strokeWidth={2.3} />
             </div>
             <div>
-              <h1 className="auth-heading">Password reset!</h1>
-              <p className="auth-subheading mt-2">
+              <h1 className="text-xl font-bold tracking-tight text-foreground">Password reset!</h1>
+              <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                 Your password has been reset successfully. You can now sign in with your new credentials.
               </p>
             </div>
             <Button
               id="forgot-back-login"
               type="button"
-              className="auth-btn-primary"
-              style={{ maxWidth: 280 }}
-              onClick={() => (window.location.href = "/login")}
+              className="w-full h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-primary/10 max-w-[280px]"
+              onClick={() => router.push("/login")}
             >
               <span className="flex items-center gap-2">
                 Back to sign in
-                <ArrowRight size={16} />
+                <ArrowRight size={15} />
               </span>
             </Button>
           </div>

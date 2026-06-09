@@ -12,16 +12,18 @@ export function DeliveryDonut({ data }: Props) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div className="dash-panel" style={{ height: "100%" }}>
-      <div className="dash-panel-header">
-        <div>
-          <p className="dash-panel-title">Delivery Status</p>
-          <p className="dash-panel-subtitle">Current period breakdown</p>
-        </div>
+    <div className="flex flex-col bg-card border border-border rounded-2xl shadow-sm p-6 w-full lg:w-[360px] select-none">
+      <div className="pb-4 border-b border-border">
+        <h3 className="text-[15px] font-bold text-foreground">
+          Delivery Status
+        </h3>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Current state breakdown
+        </p>
       </div>
 
       {/* Donut chart */}
-      <div style={{ position: "relative", height: 200, padding: "8px 0" }}>
+      <div className="relative h-[200px] my-4 flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -29,7 +31,7 @@ export function DeliveryDonut({ data }: Props) {
               cx="50%"
               cy="50%"
               innerRadius={58}
-              outerRadius={82}
+              outerRadius={80}
               paddingAngle={3}
               dataKey="value"
               strokeWidth={0}
@@ -38,110 +40,61 @@ export function DeliveryDonut({ data }: Props) {
                 <Cell
                   key={`cell-${index}`}
                   fill={entry.color}
-                  opacity={0.9}
+                  className="opacity-90 hover:opacity-100 transition-opacity duration-200"
                 />
               ))}
             </Pie>
             <Tooltip
               contentStyle={{
-                background: "rgba(14,18,34,0.95)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                borderRadius: 10,
+                background: "var(--card)",
+                border: "1px solid var(--border)",
+                borderRadius: 12,
                 fontSize: "0.8rem",
-                color: "rgba(255,255,255,0.88)",
+                color: "var(--foreground)",
+                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
               }}
-              formatter={(value: number) => [
-                `${value} (${((value / total) * 100).toFixed(1)}%)`,
-              ]}
+              formatter={(value: unknown) => {
+                const val =
+                  typeof value === "number" || typeof value === "string"
+                    ? Number(value)
+                    : 0;
+                return [
+                  `${val} (${((val / total) * 100).toFixed(1)}%)` as string,
+                ];
+              }}
             />
           </PieChart>
         </ResponsiveContainer>
 
         {/* Center label */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            pointerEvents: "none",
-          }}
-        >
-          <p
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: 800,
-              color: "rgba(255,255,255,0.92)",
-              margin: 0,
-              letterSpacing: "-0.03em",
-            }}
-          >
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <p className="text-2xl font-bold tracking-tight text-foreground leading-none">
             {total.toLocaleString()}
           </p>
-          <p
-            style={{
-              fontSize: "0.7rem",
-              color: "rgba(255,255,255,0.40)",
-              margin: 0,
-            }}
-          >
-            TOTAL
+          <p className="text-[10px] font-bold text-muted-foreground/80 tracking-wider mt-1 uppercase">
+            Total
           </p>
         </div>
       </div>
 
       {/* Legend */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          padding: "4px 20px 18px",
-        }}
-      >
+      <div className="flex flex-col gap-2.5 mt-auto">
         {data.map((item) => (
-          <div
-            key={item.name}
-            style={{ display: "flex", alignItems: "center", gap: 8 }}
-          >
+          <div key={item.name} className="flex items-center gap-2">
             <div
+              className="w-2.5 h-2.5 rounded-full shrink-0"
               style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: item.color,
-                flexShrink: 0,
-                boxShadow: `0 0 6px ${item.color}70`,
+                backgroundColor: item.color,
+                boxShadow: `0 0 4px ${item.color}40`,
               }}
             />
-            <span
-              style={{
-                flex: 1,
-                fontSize: "0.8125rem",
-                color: "rgba(255,255,255,0.60)",
-              }}
-            >
+            <span className="flex-1 text-xs text-muted-foreground font-medium truncate">
               {item.name}
             </span>
-            <span
-              style={{
-                fontSize: "0.8125rem",
-                fontWeight: 700,
-                color: "rgba(255,255,255,0.88)",
-              }}
-            >
+            <span className="text-xs font-semibold text-foreground">
               {item.value}
             </span>
-            <span
-              style={{
-                fontSize: "0.75rem",
-                color: "rgba(255,255,255,0.35)",
-                width: 40,
-                textAlign: "right",
-              }}
-            >
+            <span className="text-[10px] font-semibold text-muted-foreground/80 w-8 text-right">
               {((item.value / total) * 100).toFixed(0)}%
             </span>
           </div>
