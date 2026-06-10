@@ -7,15 +7,12 @@ import { User, Bell, Shield, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useTheme } from "next-themes";
 import { useAuthStore } from "@/store/auth-store";
 import type { ProfileSettings, SystemSettings, FleetThresholds } from "@/types/settings";
 
 export default function SettingsPage() {
   const queryClient = useQueryClient();
-  const { setTheme } = useTheme();
   const updateAuthProfile = useAuthStore((state) => state.updateProfile);
 
   // Queries
@@ -62,7 +59,6 @@ export default function SettingsPage() {
     mutationFn: apiClient.updateSystemSettings,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
-      setTheme(system.theme); // Update theme dynamically
       toast.success("System configurations updated.");
     },
   });
@@ -164,24 +160,6 @@ export default function SettingsPage() {
             System Preferences
           </h3>
           <form onSubmit={handleSystemSubmit} className="flex flex-col gap-4">
-            {/* Theme Select */}
-            <div className="flex justify-between items-center text-xs">
-              <span className="font-semibold text-muted-foreground">App theme selection</span>
-              <Select
-                value={system.theme}
-                onValueChange={(val) => setSystem({ ...system, theme: val as SystemSettings["theme"] })}
-              >
-                <SelectTrigger className="w-28 h-8 text-xs rounded-lg">
-                  <SelectValue placeholder="Theme" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="light" className="text-xs">Light</SelectItem>
-                  <SelectItem value="dark" className="text-xs">Dark</SelectItem>
-                  <SelectItem value="system" className="text-xs">System</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Email Switch */}
             <div className="flex justify-between items-center text-xs">
               <span className="font-semibold text-muted-foreground">Email alert summaries</span>

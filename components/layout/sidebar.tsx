@@ -30,11 +30,25 @@ const NAV_ITEMS = [
 ];
 
 export function Sidebar() {
-  const { collapsed, toggle } = useSidebarStore();
+  const { collapsed, toggle, setCollapsed } = useSidebarStore();
   const { user, logout } = useAuthStore();
   const { notifications } = useNotificationStore();
   const pathname = usePathname();
   const router = useRouter();
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) {
+        setCollapsed(true);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [pathname, setCollapsed]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -46,8 +60,10 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out shadow-sm",
-        collapsed ? "w-[80px]" : "w-[280px]",
+        "fixed top-0 left-0 bottom-0 z-50 flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out shadow-sm w-[280px]",
+        collapsed
+          ? "-translate-x-full lg:translate-x-0 lg:w-[80px]"
+          : "translate-x-0 lg:w-[280px]",
       )}
     >
       {/* Brand Logo */}
@@ -55,7 +71,7 @@ export function Sidebar() {
         <div className="shrink-0 flex items-center justify-center w-10 h-10 bg-primary text-primary-foreground rounded-xl shadow-md">
           <Package size={20} strokeWidth={2.5} />
         </div>
-        {!collapsed && (
+        {(!isMobile ? !collapsed : true) && (
           <span className="text-xl font-bold tracking-tight text-foreground select-none">
             Logi<span className="text-primary">Track</span>
           </span>
@@ -147,7 +163,7 @@ export function Sidebar() {
       {/* Collapse Toggle Button */}
       <button
         onClick={toggle}
-        className="absolute bottom-20 -right-3.5 z-55 flex items-center justify-center w-7 h-7 bg-card border border-border text-foreground hover:bg-accent rounded-full shadow-md cursor-pointer transition-transform duration-200"
+        className="absolute bottom-20 -right-3.5 z-55 hidden lg:flex items-center justify-center w-7 h-7 bg-card border border-border text-foreground hover:bg-accent rounded-full shadow-md cursor-pointer transition-transform duration-200"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {collapsed ? (

@@ -48,9 +48,9 @@ export const apiClient = {
 
     return [
       { name: "Delivered", value: 840 + deliveredCount, color: "#10b981" },
-      { name: "In Transit", value: 310 + transitCount, color: "#3b82f6" },
-      { name: "Pending", value: 80 + pendingCount, color: "#f59e0b" },
-      { name: "Delayed", value: 30 + delayedCount, color: "#ef4444" },
+      { name: "In Transit", value: 310 + transitCount, color: "#CCFF00" },
+      { name: "Pending", value: 80 + pendingCount, color: "#71717A" },
+      { name: "Delayed", value: 30 + delayedCount, color: "#EAB308" },
     ];
   },
 

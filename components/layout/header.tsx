@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, Search, Sun, Moon, Menu, X, Check, Trash2 } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Bell, Search, Menu, X, Check, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/sidebar-store";
 import { useNotificationStore } from "@/store/notification-store";
@@ -20,7 +19,6 @@ const PAGE_TITLES: Record<string, string> = {
 
 export function Header() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
   const { toggle } = useSidebarStore();
   const { user } = useAuthStore();
   const { notifications, markRead, markAllRead, clearNotifications } =
@@ -28,7 +26,6 @@ export function Header() {
   const [notifOpen, setNotifOpen] = useState(false);
 
   const title = PAGE_TITLES[pathname] ?? "LogiTrack";
-  const isDark = theme === "dark";
   const unreadNotifications = notifications.filter((n) => !n.read);
   const unreadCount = unreadNotifications.length;
 
@@ -66,15 +63,6 @@ export function Header() {
           aria-label="Search"
         >
           <Search size={18} />
-        </button>
-
-        {/* Theme Toggle */}
-        <button
-          className="flex items-center justify-center w-10 h-10 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors cursor-pointer"
-          onClick={() => setTheme(isDark ? "light" : "dark")}
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
         {/* Notifications Dropdown */}

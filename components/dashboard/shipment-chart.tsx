@@ -43,16 +43,16 @@ export function ShipmentChart({ data }: Props) {
           >
             <defs>
               <linearGradient id="gradShipments" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="oklch(0.55 0.15 290)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="oklch(0.55 0.15 290)" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="gradDelivered" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="oklch(0.65 0.15 140)" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="oklch(0.65 0.15 140)" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
               </linearGradient>
             </defs>
 
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(0.85 0.02 290 / 0.3)" />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.3} />
 
             <XAxis
               dataKey="date"
@@ -72,7 +72,7 @@ export function ShipmentChart({ data }: Props) {
               contentStyle={{
                 background: "var(--card)",
                 border: "1px solid var(--border)",
-                borderRadius: 12,
+                borderRadius: 8,
                 fontSize: "0.8rem",
                 color: "var(--foreground)",
                 boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
@@ -84,21 +84,21 @@ export function ShipmentChart({ data }: Props) {
               type="monotone"
               dataKey="shipments"
               name="Total"
-              stroke="oklch(0.55 0.15 290)"
+              stroke="var(--primary)"
               strokeWidth={2}
               fill="url(#gradShipments)"
               dot={false}
-              activeDot={{ r: 4, fill: "oklch(0.55 0.15 290)", strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: "var(--primary)", strokeWidth: 0 }}
             />
             <Area
               type="monotone"
               dataKey="delivered"
               name="Delivered"
-              stroke="oklch(0.65 0.15 140)"
+              stroke="var(--accent)"
               strokeWidth={2}
               fill="url(#gradDelivered)"
               dot={false}
-              activeDot={{ r: 4, fill: "oklch(0.65 0.15 140)", strokeWidth: 0 }}
+              activeDot={{ r: 4, fill: "var(--accent)", strokeWidth: 0 }}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -107,11 +107,11 @@ export function ShipmentChart({ data }: Props) {
       {/* Legend */}
       <div className="flex gap-5 px-2 mt-auto">
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-[oklch(0.55_0.15_290)] shadow-sm shadow-purple-500/30" />
+          <div className="w-2.5 h-2.5 rounded bg-primary shadow-sm" />
           <span className="text-xs text-muted-foreground font-medium">Total Shipments</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-[oklch(0.65_0.15_140)] shadow-sm shadow-emerald-500/30" />
+          <div className="w-2.5 h-2.5 rounded bg-accent shadow-sm" />
           <span className="text-xs text-muted-foreground font-medium">Delivered</span>
         </div>
       </div>

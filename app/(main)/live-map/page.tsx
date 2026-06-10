@@ -69,7 +69,7 @@ export default function LiveMapPage() {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-140px)] select-none">
+    <div className="flex flex-col lg:flex-row gap-6 h-auto lg:h-[calc(100vh-140px)] select-none">
       {/* Sidebar Controls */}
       <div className="flex flex-col gap-4 w-full lg:w-80 shrink-0">
         {/* Header control */}
@@ -206,7 +206,7 @@ export default function LiveMapPage() {
       </div>
 
       {/* Main Map Panel */}
-      <div className="flex-1 bg-card border border-border rounded-2xl shadow-sm p-4 relative overflow-hidden flex items-center justify-center min-h-[400px]">
+      <div className="flex-1 bg-card border border-border rounded-2xl shadow-sm p-4 relative overflow-hidden flex items-center justify-center min-h-[400px] h-[450px] lg:h-full w-full">
         {/* Background Grids */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.85_0.02_290/0.06)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.85_0.02_290/0.06)_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none" />
 
@@ -255,7 +255,7 @@ export default function LiveMapPage() {
                   r={8}
                   className={cn(
                     "stroke-card stroke-2 transition-all duration-300",
-                    h.status === "active" ? "fill-primary" : "",
+                    h.status === "active" ? "fill-blue-500" : "",
                     h.status === "full" ? "fill-destructive" : "",
                     h.status === "maintenance" ? "fill-amber-500" : "",
                   )}
@@ -264,7 +264,7 @@ export default function LiveMapPage() {
                   cx={coords.x}
                   cy={coords.y}
                   r={14}
-                  className="fill-transparent stroke-primary/10 group-hover:stroke-primary/30 transition-all duration-300"
+                  className="fill-transparent stroke-blue-500/10 group-hover:stroke-blue-500/30 transition-all duration-300"
                 />
                 <text
                   x={coords.x}
@@ -326,10 +326,10 @@ export default function LiveMapPage() {
                   rx={4}
                   className={cn(
                     "stroke-card stroke-2 shadow-sm transition-all duration-300",
-                    v.status === "on-route" ? "fill-blue-500" : "",
-                    v.status === "delayed" ? "fill-destructive" : "",
-                    v.status === "idle" ? "fill-zinc-500" : "",
-                    v.status === "maintenance" ? "fill-amber-500" : "",
+                    v.status === "on-route" ? "fill-primary animate-pulse" : "",
+                    v.status === "delayed" ? "fill-accent" : "",
+                    v.status === "idle" ? "fill-zinc-600" : "",
+                    v.status === "maintenance" ? "fill-amber-600" : "",
                     isSelected && "stroke-primary stroke-2 scale-125",
                   )}
                 />
@@ -349,15 +349,15 @@ export default function LiveMapPage() {
         {/* Floating Map Info overlay */}
         <div className="absolute bottom-4 left-4 p-3 bg-card/90 backdrop-blur border border-border rounded-xl text-[10px] font-semibold text-muted-foreground flex flex-col gap-1.5 shadow select-none z-20">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-primary rounded-full" />
+            <span className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
             <span>Active Depots / Hubs</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-blue-500 rounded" />
+            <span className="w-2.5 h-2.5 bg-primary rounded animate-pulse" />
             <span>Moving Vehicle</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-destructive rounded" />
+            <span className="w-2.5 h-2.5 bg-accent rounded" />
             <span>Delayed Unit Alert</span>
           </div>
         </div>
