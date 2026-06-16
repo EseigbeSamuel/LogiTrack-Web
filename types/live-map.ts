@@ -12,7 +12,7 @@ export interface MapMarker {
   lat: number;
   lng: number;
   title: string;
-  type: "vehicle" | "hub";
+  type: "fleet" | "hub";
   status?: string;
   details?: string;
 }

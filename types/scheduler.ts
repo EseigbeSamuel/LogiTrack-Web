@@ -6,7 +6,7 @@ export interface ShipmentSchedule {
   destination: string;
   departureTime: string;
   estimatedDelivery: string;
-  assignedVehicle: string;
+  assignedFleet: string;
   status: "scheduled" | "in-transit" | "completed" | "cancelled";
   priority: "low" | "medium" | "high";
 }

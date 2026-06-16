@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { Filter, RefreshCcw, Navigation } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Vehicle } from "@/types/vehicle";
+import type { Fleet } from "@/types/fleet";
+import { Button } from "@/components/ui/button";
 
 // SVG coordinates mapping for main hubs
 const HUB_COORDS: Record<string, { x: number; y: number }> = {
@@ -24,7 +25,7 @@ const HUB_COORDS: Record<string, { x: number; y: number }> = {
 };
 
 // Interpolates a coordinate between two points based on progress percentage
-function getVehiclePosition(route: string, progress: number) {
+function getFleetPosition(route: string, progress: number) {
   const [origin, dest] = route.split(" → ").map((r) => r.trim());
   const originCoord = HUB_COORDS[origin] ||
     HUB_COORDS[`${origin} Hub`] ||
@@ -43,14 +44,14 @@ function getVehiclePosition(route: string, progress: number) {
 }
 
 export default function LiveMapPage() {
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [selectedFleet, setSelectedFleet] = useState<Fleet | null>(null);
   const [filterStatus, setFilterStatus] = useState<
     "all" | "on-route" | "delayed" | "idle"
   >("all");
 
-  const { data: vehicles = [], refetch: refetchVehicles } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: apiClient.getVehicles,
+  const { data: fleets = [], refetch: refetchFleets } = useQuery({
+    queryKey: ["fleets"],
+    queryFn: apiClient.getFleets,
   });
 
   const { data: hubs = [], refetch: refetchHubs } = useQuery({
@@ -59,11 +60,11 @@ export default function LiveMapPage() {
   });
 
   const handleRefresh = () => {
-    refetchVehicles();
+    refetchFleets();
     refetchHubs();
   };
 
-  const filteredVehicles = vehicles.filter((v) => {
+  const filteredFleets = fleets.filter((v) => {
     if (filterStatus === "all") return true;
     return v.status === filterStatus;
   });
@@ -79,13 +80,15 @@ export default function LiveMapPage() {
               <Navigation size={16} className="text-primary animate-pulse" />
               Live Tracking Hub
             </h2>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleRefresh}
-              className="p-1.5 hover:bg-accent text-muted-foreground hover:text-foreground rounded-lg transition-colors cursor-pointer"
+              className="w-8 h-8 hover:bg-accent text-muted-foreground hover:text-foreground rounded-lg cursor-pointer"
               title="Refresh Map"
             >
               <RefreshCcw size={14} />
-            </button>
+            </Button>
           </div>
           <p className="text-[11px] text-muted-foreground mt-1">
             Real-time status coordinates across Nigeria
@@ -98,39 +101,42 @@ export default function LiveMapPage() {
             <Filter size={12} /> Filter Units
           </span>
           {[
-            { id: "all", label: "Show All Vehicles" },
+            { id: "all", label: "Show All Fleets" },
             { id: "on-route", label: "On Active Route" },
             { id: "delayed", label: "Delayed Alerts" },
             { id: "idle", label: "Idle in Depots" },
           ].map((f) => (
-            <button
+            <Button
               key={f.id}
+              variant="ghost"
               onClick={() => setFilterStatus(f.id as typeof filterStatus)}
               className={cn(
-                "w-full text-left px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 cursor-pointer",
+                "w-full justify-start px-3 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 cursor-pointer",
                 filterStatus === f.id
-                  ? "bg-primary/10 border-primary/30 text-primary"
+                  ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/10"
                   : "bg-transparent border-transparent text-muted-foreground hover:bg-accent/40",
               )}
             >
               {f.label}
-            </button>
+            </Button>
           ))}
         </div>
 
         {/* Selected Card details */}
-        {selectedVehicle ? (
+        {selectedFleet ? (
           <div className="p-5 border border-border bg-card rounded-2xl shadow-md flex flex-col gap-4 animate-in slide-in-from-bottom-2 duration-300">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-primary bg-primary/10 border border-primary/25 px-2.5 py-1 rounded-md font-mono uppercase">
-                {selectedVehicle.plate}
+                {selectedFleet.plate}
               </span>
-              <button
-                onClick={() => setSelectedVehicle(null)}
-                className="text-muted-foreground hover:text-foreground text-[10px] font-bold"
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedFleet(null)}
+                className="h-6 px-2 text-muted-foreground hover:text-foreground text-[10px] font-bold cursor-pointer"
               >
                 Clear
-              </button>
+              </Button>
             </div>
 
             <div className="flex flex-col gap-1">
@@ -138,7 +144,7 @@ export default function LiveMapPage() {
                 Assigned Driver
               </span>
               <span className="text-sm font-bold text-foreground">
-                {selectedVehicle.driver}
+                {selectedFleet.driver}
               </span>
             </div>
 
@@ -148,7 +154,7 @@ export default function LiveMapPage() {
                   Current Speed
                 </p>
                 <p className="text-xs font-bold text-foreground mt-0.5">
-                  {selectedVehicle.speed} km/h
+                  {selectedFleet.speed} km/h
                 </p>
               </div>
               <div>
@@ -156,12 +162,12 @@ export default function LiveMapPage() {
                 <p
                   className={cn(
                     "text-xs font-bold mt-0.5",
-                    selectedVehicle.fuelLevel < 20
+                    selectedFleet.fuelLevel < 20
                       ? "text-destructive"
                       : "text-foreground",
                   )}
                 >
-                  {selectedVehicle.fuelLevel}%
+                  {selectedFleet.fuelLevel}%
                 </p>
               </div>
             </div>
@@ -169,18 +175,18 @@ export default function LiveMapPage() {
             <div className="flex flex-col gap-1">
               <p className="text-[10px] text-muted-foreground">Route Details</p>
               <p className="text-xs font-bold text-foreground mt-0.5">
-                {selectedVehicle.route}
+                {selectedFleet.route}
               </p>
-              {selectedVehicle.progress > 0 && (
+              {selectedFleet.progress > 0 && (
                 <div className="flex items-center gap-2 mt-1">
                   <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary rounded-full"
-                      style={{ width: `${selectedVehicle.progress}%` }}
+                      style={{ width: `${selectedFleet.progress}%` }}
                     />
                   </div>
                   <span className="text-[10px] font-bold text-muted-foreground">
-                    {selectedVehicle.progress}%
+                    {selectedFleet.progress}%
                   </span>
                 </div>
               )}
@@ -188,10 +194,10 @@ export default function LiveMapPage() {
 
             <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-1">
               <span>
-                ETA: <strong>{selectedVehicle.eta}</strong>
+                ETA: <strong>{selectedFleet.eta}</strong>
               </span>
               <span>
-                Updated: <strong>{selectedVehicle.lastUpdated}</strong>
+                Updated: <strong>{selectedFleet.lastUpdated}</strong>
               </span>
             </div>
           </div>
@@ -199,7 +205,7 @@ export default function LiveMapPage() {
           <div className="flex-1 flex flex-col items-center justify-center p-8 border border-border border-dashed bg-accent/5 rounded-2xl text-center select-none">
             <span className="text-3xl animate-bounce">🚛</span>
             <p className="text-xs text-muted-foreground font-semibold mt-2">
-              Select a vehicle marker on the map to inspect details.
+              Select a fleet marker on the map to inspect details.
             </p>
           </div>
         )}
@@ -216,7 +222,7 @@ export default function LiveMapPage() {
           className="w-full h-full max-w-[500px] max-h-[460px] z-10"
         >
           {/* Active routes dotted paths */}
-          {vehicles
+          {fleets
             .filter((v) => v.status === "on-route" || v.status === "delayed")
             .map((v) => {
               const [origin, dest] = v.route.split(" → ").map((r) => r.trim());
@@ -281,13 +287,13 @@ export default function LiveMapPage() {
             );
           })}
 
-          {/* Vehicle Markers */}
-          {filteredVehicles.map((v) => {
+          {/* Fleet Markers */}
+          {filteredFleets.map((v) => {
             let x = 200;
             let y = 200;
 
             if (v.status === "on-route" || v.status === "delayed") {
-              const pos = getVehiclePosition(v.route, v.progress);
+              const pos = getFleetPosition(v.route, v.progress);
               x = pos.x;
               y = pos.y;
             } else {
@@ -301,15 +307,15 @@ export default function LiveMapPage() {
               y = coords.y + (v.id === "v-003" ? 12 : -12);
             }
 
-            const isSelected = selectedVehicle?.id === v.id;
+            const isSelected = selectedFleet?.id === v.id;
 
             return (
               <g
                 key={v.id}
                 className="cursor-pointer"
-                onClick={() => setSelectedVehicle(v)}
+                onClick={() => setSelectedFleet(v)}
               >
-                {/* Active radar rings for selected or moving vehicles */}
+                {/* Active radar rings for selected or moving fleets */}
                 {(v.status === "on-route" || isSelected) && (
                   <circle
                     cx={x}
@@ -354,7 +360,7 @@ export default function LiveMapPage() {
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 bg-primary rounded animate-pulse" />
-            <span>Moving Vehicle</span>
+            <span>Moving Fleet</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 bg-accent rounded" />

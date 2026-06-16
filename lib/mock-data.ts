@@ -2,7 +2,7 @@ import type {
   StatCard,
   ShipmentPoint,
   DeliveryStatus,
-  Vehicle,
+  Fleet,
   ActivityEvent,
 } from "@/types/dashboard";
 
@@ -19,8 +19,8 @@ export const statCards: StatCard[] = [
     color: "blue",
   },
   {
-    id: "vehicles",
-    label: "Active Vehicles",
+    id: "fleets",
+    label: "Active Fleets",
     value: "47",
     rawValue: 47,
     trend: 3.2,
@@ -79,8 +79,8 @@ export const deliveryStatus: DeliveryStatus[] = [
   { name: "Delayed",     value: 36,  color: "#ef4444" },
 ];
 
-/* ── Fleet Vehicles ── */
-export const fleetVehicles: Vehicle[] = [
+/* ── Fleet Fleets ── */
+export const fleetFleets: Fleet[] = [
   {
     id: "v-001",
     plate: "LGT-4821",
@@ -141,7 +141,7 @@ export const activityFeed: ActivityEvent[] = [
     title: "Shipment #SHP-8821 delivered",
     description: "Electronics order delivered to Abuja hub",
     timestamp: "2 min ago",
-    vehicle: "LGT-4821",
+    fleet: "LGT-4821",
   },
   {
     id: "a-002",
@@ -149,7 +149,7 @@ export const activityFeed: ActivityEvent[] = [
     title: "LGT-3344 departed Port Harcourt",
     description: "En route to Enugu, ETA 3h 55m",
     timestamp: "18 min ago",
-    vehicle: "LGT-3344",
+    fleet: "LGT-3344",
   },
   {
     id: "a-003",
@@ -157,7 +157,7 @@ export const activityFeed: ActivityEvent[] = [
     title: "Delay alert — LGT-2290",
     description: "Traffic incident on Lagos–Ibadan Expressway",
     timestamp: "34 min ago",
-    vehicle: "LGT-2290",
+    fleet: "LGT-2290",
   },
   {
     id: "a-004",
@@ -172,7 +172,7 @@ export const activityFeed: ActivityEvent[] = [
     title: "LGT-5512 sent to service bay",
     description: "Routine 10,000km maintenance check",
     timestamp: "2h ago",
-    vehicle: "LGT-5512",
+    fleet: "LGT-5512",
   },
   {
     id: "a-006",
@@ -185,9 +185,9 @@ export const activityFeed: ActivityEvent[] = [
     id: "a-007",
     type: "alert",
     title: "Fuel level low — LGT-7701",
-    description: "Vehicle at Kano depot, below 15% fuel",
+    description: "Fleet at Kano depot, below 15% fuel",
     timestamp: "4h ago",
-    vehicle: "LGT-7701",
+    fleet: "LGT-7701",
   },
   {
     id: "a-008",

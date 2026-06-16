@@ -1,4 +1,4 @@
-export interface Vehicle {
+export interface Fleet {
   id: string;
   plate: string;
   driver: string;

@@ -166,14 +166,16 @@ export default function SignupPage() {
                 onChange={handleChange}
                 className="h-10 text-xs rounded-xl pr-10"
               />
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-accent/50 cursor-pointer h-8 w-8 rounded-lg"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword((v) => !v)}
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              </Button>
             </div>
 
             {/* Strength bar */}
@@ -222,14 +224,16 @@ export default function SignupPage() {
                 onChange={handleChange}
                 className="h-10 text-xs rounded-xl pr-10"
               />
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                className="absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground hover:bg-accent/50 cursor-pointer h-8 w-8 rounded-lg"
                 aria-label={showConfirm ? "Hide password" : "Show password"}
                 onClick={() => setShowConfirm((v) => !v)}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
+              </Button>
             </div>
           </div>
 

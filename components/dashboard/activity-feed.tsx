@@ -1,5 +1,6 @@
 import React from "react";
 import type { ActivityEvent } from "@/types/dashboard";
+import { Button } from "@/components/ui/button";
 
 const EVENT_ICONS: Record<
   ActivityEvent["type"],
@@ -47,12 +48,12 @@ export function ActivityFeed({ events }: Props) {
             Live logistics and fleet logs
           </p>
         </div>
-        <button
+        <Button
           onClick={() => (window.location.href = "/notification")}
-          className="px-3 py-1.5 text-xs font-semibold bg-accent hover:bg-accent/80 text-foreground border border-border rounded-lg transition-colors cursor-pointer"
+          className="h-8 px-3 text-xs shadow-sm cursor-pointer"
         >
           View all
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 flex flex-col gap-4 mt-6 overflow-y-auto max-h-[360px] pr-1">

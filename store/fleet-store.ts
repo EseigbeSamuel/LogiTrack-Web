@@ -1,41 +1,41 @@
 import { create } from "zustand";
-import { fleetVehicles } from "@/mocks/vehicle-data";
-import type { Vehicle } from "@/types/vehicle";
+import { fleetFleets } from "@/mocks/fleet-data";
+import type { Fleet } from "@/types/fleet";
 
 interface FleetState {
-  vehicles: Vehicle[];
-  addVehicle: (vehicle: Omit<Vehicle, "id" | "lastUpdated">) => void;
-  updateVehicleStatus: (id: string, status: Vehicle["status"]) => void;
-  updateVehicleDetails: (id: string, updates: Partial<Vehicle>) => void;
-  removeVehicle: (id: string) => void;
+  fleets: Fleet[];
+  addFleet: (fleet: Omit<Fleet, "id" | "lastUpdated">) => void;
+  updateFleetStatus: (id: string, status: Fleet["status"]) => void;
+  updateFleetDetails: (id: string, updates: Partial<Fleet>) => void;
+  removeFleet: (id: string) => void;
 }
 
 export const useFleetStore = create<FleetState>((set) => ({
-  vehicles: fleetVehicles,
-  addVehicle: (newVehicle) =>
+  fleets: fleetFleets,
+  addFleet: (newFleet) =>
     set((state) => {
-      const id = `v-${String(state.vehicles.length + 1).padStart(3, "0")}`;
-      const vehicle: Vehicle = {
-        ...newVehicle,
+      const id = `v-${String(state.fleets.length + 1).padStart(3, "0")}`;
+      const fleet: Fleet = {
+        ...newFleet,
         id,
         lastUpdated: "Just now",
       };
-      return { vehicles: [vehicle, ...state.vehicles] };
+      return { fleets: [fleet, ...state.fleets] };
     }),
-  updateVehicleStatus: (id, status) =>
+  updateFleetStatus: (id, status) =>
     set((state) => ({
-      vehicles: state.vehicles.map((v) =>
+      fleets: state.fleets.map((v) =>
         v.id === id ? { ...v, status, lastUpdated: "Just now" } : v
       ),
     })),
-  updateVehicleDetails: (id, updates) =>
+  updateFleetDetails: (id, updates) =>
     set((state) => ({
-      vehicles: state.vehicles.map((v) =>
+      fleets: state.fleets.map((v) =>
         v.id === id ? { ...v, ...updates, lastUpdated: "Just now" } : v
       ),
     })),
-  removeVehicle: (id) =>
+  removeFleet: (id) =>
     set((state) => ({
-      vehicles: state.vehicles.filter((v) => v.id !== id),
+      fleets: state.fleets.filter((v) => v.id !== id),
     })),
 }));

@@ -5,7 +5,7 @@ import { useSettingsStore } from "@/store/settings-store";
 import { statCards, shipmentTrend } from "@/mocks/dashboard-data";
 import { logisticHubs } from "@/mocks/live-map-data";
 import type { StatCard, ShipmentPoint, DeliveryStatus as IDeliveryStatus } from "@/types/dashboard";
-import type { Vehicle } from "@/types/vehicle";
+import type { Fleet } from "@/types/fleet";
 import type { ShipmentSchedule } from "@/types/scheduler";
 import type { NotificationItem } from "@/types/notification";
 import type { LogisticHub } from "@/types/live-map";
@@ -16,16 +16,16 @@ export const apiClient = {
   // ── Dashboard ──
   getDashboardStats: async (): Promise<StatCard[]> => {
     await delay(600);
-    // Dynamically adjust active vehicles stat based on the store
-    const vehicles = useFleetStore.getState().vehicles;
-    const activeCount = vehicles.filter((v) => v.status !== "idle" && v.status !== "maintenance").length;
+    // Dynamically adjust active fleets stat based on the store
+    const fleets = useFleetStore.getState().fleets;
+    const activeCount = fleets.filter((v) => v.status !== "idle" && v.status !== "maintenance").length;
     return statCards.map((card) => {
-      if (card.id === "vehicles") {
+      if (card.id === "fleets") {
         return {
           ...card,
           value: String(activeCount),
           rawValue: activeCount,
-          trendLabel: `of ${vehicles.length} fleet`,
+          trendLabel: `of ${fleets.length} fleet`,
         };
       }
       return card;
@@ -44,7 +44,7 @@ export const apiClient = {
     const deliveredCount = schedules.filter((s) => s.status === "completed").length;
     const transitCount = schedules.filter((s) => s.status === "in-transit").length;
     const pendingCount = schedules.filter((s) => s.status === "scheduled").length;
-    const delayedCount = useFleetStore.getState().vehicles.filter((v) => v.status === "delayed").length;
+    const delayedCount = useFleetStore.getState().fleets.filter((v) => v.status === "delayed").length;
 
     return [
       { name: "Delivered", value: 840 + deliveredCount, color: "#10b981" },
@@ -54,31 +54,31 @@ export const apiClient = {
     ];
   },
 
-  // ── Fleet (Vehicles) ──
-  getVehicles: async (): Promise<Vehicle[]> => {
+  // ── Fleet (Fleets) ──
+  getFleets: async (): Promise<Fleet[]> => {
     await delay(600);
-    return useFleetStore.getState().vehicles;
+    return useFleetStore.getState().fleets;
   },
 
-  addVehicle: async (vehicle: Omit<Vehicle, "id" | "lastUpdated">): Promise<Vehicle> => {
+  addFleet: async (fleet: Omit<Fleet, "id" | "lastUpdated">): Promise<Fleet> => {
     await delay(800);
-    useFleetStore.getState().addVehicle(vehicle);
-    return useFleetStore.getState().vehicles[0];
+    useFleetStore.getState().addFleet(fleet);
+    return useFleetStore.getState().fleets[0];
   },
 
-  updateVehicleStatus: async (id: string, status: Vehicle["status"]): Promise<void> => {
+  updateFleetStatus: async (id: string, status: Fleet["status"]): Promise<void> => {
     await delay(400);
-    useFleetStore.getState().updateVehicleStatus(id, status);
+    useFleetStore.getState().updateFleetStatus(id, status);
   },
 
-  updateVehicleDetails: async (id: string, updates: Partial<Vehicle>): Promise<void> => {
+  updateFleetDetails: async (id: string, updates: Partial<Fleet>): Promise<void> => {
     await delay(500);
-    useFleetStore.getState().updateVehicleDetails(id, updates);
+    useFleetStore.getState().updateFleetDetails(id, updates);
   },
 
-  removeVehicle: async (id: string): Promise<void> => {
+  removeFleet: async (id: string): Promise<void> => {
     await delay(600);
-    useFleetStore.getState().removeVehicle(id);
+    useFleetStore.getState().removeFleet(id);
   },
 
   // ── Live Map ──

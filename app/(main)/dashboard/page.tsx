@@ -9,6 +9,7 @@ import { FleetStatus } from "@/components/dashboard/fleet-status";
 import { apiClient } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
 import type { ActivityEvent } from "@/types/dashboard";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   // ── Queries ──
@@ -27,9 +28,9 @@ export default function DashboardPage() {
     queryFn: apiClient.getDeliveryStatus,
   });
 
-  const { data: vehicles = [], isLoading: vehiclesLoading } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: apiClient.getVehicles,
+  const { data: fleets = [], isLoading: fleetsLoading } = useQuery({
+    queryKey: ["fleets"],
+    queryFn: apiClient.getFleets,
   });
 
   const { data: notifications = [], isLoading: notifsLoading } = useQuery({
@@ -56,7 +57,7 @@ export default function DashboardPage() {
     };
   });
 
-  const isPageLoading = statsLoading || trendLoading || statusLoading || vehiclesLoading || notifsLoading;
+  const isPageLoading = statsLoading || trendLoading || statusLoading || fleetsLoading || notifsLoading;
 
   if (isPageLoading) {
     return (
@@ -108,25 +109,26 @@ export default function DashboardPage() {
       {/* Bottom Lists Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <ActivityFeed events={activityFeed} />
-        <FleetStatus vehicles={vehicles} />
+        <FleetStatus fleets={fleets} />
       </div>
 
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-3 p-4 border border-border bg-card rounded-2xl shadow-sm">
         {[
           { icon: <Plus size={16} />, label: "New Shipment", href: "/scheduler", color: "bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/30 text-blue-600 dark:text-blue-400" },
-          { icon: <Truck size={16} />, label: "Assign Vehicle", href: "/vehicle", color: "bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400" },
+          { icon: <Truck size={16} />, label: "Assign Fleet", href: "/fleet", color: "bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/30 text-emerald-600 dark:text-emerald-400" },
           { icon: <MapPin size={16} />, label: "Track Fleet", href: "/live-map", color: "bg-violet-500/10 hover:bg-violet-500/20 border-violet-500/30 text-violet-600 dark:text-violet-400" },
           { icon: <BarChart3 size={16} />, label: "Run Report", href: "/settings", color: "bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30 text-amber-600 dark:text-amber-400" },
         ].map((action) => (
-          <button
+          <Button
             key={action.label}
+            variant="outline"
             onClick={() => (window.location.href = action.href)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all duration-200 cursor-pointer ${action.color}`}
+            className={`flex items-center gap-2 h-10 px-4 rounded-xl border text-xs font-semibold cursor-pointer ${action.color}`}
           >
             {action.icon}
             {action.label}
-          </button>
+          </Button>
         ))}
       </div>
     </div>

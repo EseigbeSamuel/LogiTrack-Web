@@ -1,15 +1,16 @@
 import React from "react";
-import type { Vehicle } from "@/types/vehicle";
+import type { Fleet } from "@/types/fleet";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
-const STATUS_LABELS: Record<Vehicle["status"], string> = {
+const STATUS_LABELS: Record<Fleet["status"], string> = {
   "on-route": "On Route",
   idle: "Idle",
   delayed: "Delayed",
   maintenance: "Service",
 };
 
-const STATUS_CLASSES: Record<Vehicle["status"], string> = {
+const STATUS_CLASSES: Record<Fleet["status"], string> = {
   "on-route": "text-blue-600 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-500/5",
   idle: "text-zinc-600 bg-zinc-500/10 dark:text-zinc-400 dark:bg-zinc-500/5",
   delayed: "text-destructive bg-destructive/10 dark:bg-destructive/5",
@@ -17,27 +18,27 @@ const STATUS_CLASSES: Record<Vehicle["status"], string> = {
 };
 
 interface Props {
-  vehicles: Vehicle[];
+  fleets: Fleet[];
 }
 
-export function FleetStatus({ vehicles }: Props) {
+export function FleetStatus({ fleets }: Props) {
   return (
     <div className="flex flex-col bg-card border border-border rounded-2xl shadow-sm p-6 flex-1 min-w-0 select-none">
       <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
           <h3 className="text-[15px] font-bold text-foreground">Fleet Status</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">{vehicles.length} active units tracked</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{fleets.length} active units tracked</p>
         </div>
-        <button
-          onClick={() => (window.location.href = "/vehicle")}
-          className="px-3 py-1.5 text-xs font-semibold bg-accent hover:bg-accent/80 text-foreground border border-border rounded-lg transition-colors cursor-pointer"
+        <Button
+          onClick={() => (window.location.href = "/fleet")}
+          className="h-8 px-3 text-xs shadow-sm cursor-pointer"
         >
           Manage
-        </button>
+        </Button>
       </div>
 
       <div className="flex-1 flex flex-col gap-4 mt-6 overflow-y-auto max-h-[360px] pr-1">
-        {vehicles.map((v) => (
+        {fleets.map((v) => (
           <div key={v.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-border bg-accent/10 hover:bg-accent/20 transition-colors">
             {/* Left: Plate + Driver info */}
             <div className="flex items-center gap-3">

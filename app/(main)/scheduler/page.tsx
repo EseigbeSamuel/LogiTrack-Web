@@ -7,6 +7,14 @@ import { Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -31,7 +39,7 @@ export default function SchedulerPage() {
     destination: "",
     departureTime: "",
     estimatedDelivery: "",
-    assignedVehicle: "",
+    assignedFleet: "",
     status: "scheduled" as ShipmentSchedule["status"],
     priority: "medium" as ShipmentSchedule["priority"],
   });
@@ -42,9 +50,9 @@ export default function SchedulerPage() {
     queryFn: apiClient.getSchedules,
   });
 
-  const { data: vehicles = [], isLoading: vehiclesLoading } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: apiClient.getVehicles,
+  const { data: fleets = [], isLoading: fleetsLoading } = useQuery({
+    queryKey: ["fleets"],
+    queryFn: apiClient.getFleets,
   });
 
   // Mutations
@@ -61,7 +69,7 @@ export default function SchedulerPage() {
         destination: "",
         departureTime: "",
         estimatedDelivery: "",
-        assignedVehicle: "",
+        assignedFleet: "",
         status: "scheduled",
         priority: "medium",
       });
@@ -89,7 +97,7 @@ export default function SchedulerPage() {
       !newSchedule.origin ||
       !newSchedule.destination ||
       !newSchedule.departureTime ||
-      !newSchedule.assignedVehicle
+      !newSchedule.assignedFleet
     ) {
       toast.error("Please fill in all required fields.");
       return;
@@ -117,7 +125,7 @@ export default function SchedulerPage() {
     return priorityMatch && statusMatch;
   });
 
-  const isPageLoading = schedulesLoading || vehiclesLoading;
+  const isPageLoading = schedulesLoading || fleetsLoading;
 
   return (
     <div className="flex flex-col gap-6 select-none">
@@ -222,36 +230,36 @@ export default function SchedulerPage() {
                 No shipments match these filters.
               </div>
             ) : (
-              <table className="w-full text-left border-collapse text-xs select-none">
-                <thead>
-                  <tr className="border-b border-border bg-accent/20 text-muted-foreground font-semibold">
-                    <th className="p-4">Shipment</th>
-                    <th className="p-4">Client</th>
-                    <th className="p-4">Route</th>
-                    <th className="p-4">Vehicle</th>
-                    <th className="p-4">Priority</th>
-                    <th className="p-4">Schedule Date</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
+              <Table className="w-full text-left text-xs select-none">
+                <TableHeader>
+                  <TableRow className="border-b border-border bg-accent/20 text-muted-foreground font-semibold hover:bg-accent/20">
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Shipment</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Client</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Route</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Fleet</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Priority</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Schedule Date</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Status</TableHead>
+                    <TableHead className="p-4 h-auto text-right text-muted-foreground font-semibold">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-border">
                   {filteredSchedules.map((s) => (
-                    <tr
+                    <TableRow
                       key={s.id}
                       className="hover:bg-accent/10 transition-colors"
                     >
-                      <td className="p-4 font-mono font-bold text-primary">
+                      <TableCell className="p-4 font-mono font-bold text-primary">
                         {s.shipmentNumber}
-                      </td>
-                      <td className="p-4 font-medium">{s.client}</td>
-                      <td className="p-4 font-medium text-muted-foreground">
+                      </TableCell>
+                      <TableCell className="p-4 font-medium">{s.client}</TableCell>
+                      <TableCell className="p-4 font-medium text-muted-foreground">
                         {s.origin} → {s.destination}
-                      </td>
-                      <td className="p-4 font-mono font-semibold text-muted-foreground">
-                        {s.assignedVehicle}
-                      </td>
-                      <td className="p-4">
+                      </TableCell>
+                      <TableCell className="p-4 font-mono font-semibold text-muted-foreground">
+                        {s.assignedFleet}
+                      </TableCell>
+                      <TableCell className="p-4">
                         <span
                           className={cn(
                             "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
@@ -265,16 +273,16 @@ export default function SchedulerPage() {
                         >
                           {s.priority}
                         </span>
-                      </td>
-                      <td className="p-4 text-muted-foreground font-medium">
+                      </TableCell>
+                      <TableCell className="p-4 text-muted-foreground font-medium">
                         {new Date(s.departureTime).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
-                      </td>
-                      <td className="p-4">
+                      </TableCell>
+                      <TableCell className="p-4">
                         <span
                           className={cn(
                             "px-2 py-0.5 rounded-full text-[10px] font-bold",
@@ -290,8 +298,8 @@ export default function SchedulerPage() {
                         >
                           {s.status.replace("-", " ")}
                         </span>
-                      </td>
-                      <td
+                      </TableCell>
+                      <TableCell
                         className="p-4 text-right"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -322,11 +330,11 @@ export default function SchedulerPage() {
                             </SelectItem>
                           </SelectContent>
                         </Select>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             )}
           </div>
         </div>
@@ -338,12 +346,14 @@ export default function SchedulerPage() {
               <h3 className="font-bold text-sm text-foreground">
                 Schedule Shipment
               </h3>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={() => setShowAddForm(false)}
-                className="text-muted-foreground hover:text-foreground"
+                className="w-8 h-8 text-muted-foreground hover:text-foreground"
               >
                 <X size={16} />
-              </button>
+              </Button>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -416,19 +426,19 @@ export default function SchedulerPage() {
 
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] font-bold text-muted-foreground uppercase">
-                  Assign Vehicle
+                  Assign Fleet
                 </label>
                 <Select
-                  value={newSchedule.assignedVehicle}
+                  value={newSchedule.assignedFleet}
                   onValueChange={(val) =>
-                    setNewSchedule({ ...newSchedule, assignedVehicle: val })
+                    setNewSchedule({ ...newSchedule, assignedFleet: val })
                   }
                 >
                   <SelectTrigger className="h-9 text-xs">
                     <SelectValue placeholder="Select Fleet Unit" />
                   </SelectTrigger>
                   <SelectContent>
-                    {vehicles.map((v) => (
+                    {fleets.map((v) => (
                       <SelectItem
                         key={v.id}
                         value={v.plate}

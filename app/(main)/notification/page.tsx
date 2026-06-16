@@ -99,18 +99,19 @@ export default function NotificationPage() {
         {/* Category Tabs */}
         <div className="flex flex-wrap gap-2 p-1.5 bg-accent/25 border border-border rounded-xl self-start">
           {CATEGORY_TABS.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant="ghost"
               onClick={() => setFilterCategory(tab.id)}
               className={cn(
-                "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer",
+                "px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer h-auto",
                 filterCategory === tab.id
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-card text-foreground shadow-sm hover:bg-card"
                   : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
               )}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -183,16 +184,18 @@ export default function NotificationPage() {
                 </div>
 
                 {!n.read && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       readMutation.mutate(n.id);
                     }}
-                    className="shrink-0 p-1 hover:bg-accent rounded text-primary hover:text-foreground transition-colors cursor-pointer"
+                    className="shrink-0 w-6 h-6 hover:bg-accent rounded text-primary hover:text-foreground cursor-pointer"
                     title="Mark read"
                   >
                     <Check size={14} />
-                  </button>
+                  </Button>
                 )}
               </div>
             ))

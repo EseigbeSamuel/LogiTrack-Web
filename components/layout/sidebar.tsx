@@ -19,13 +19,13 @@ import { cn } from "@/lib/utils";
 import { useSidebarStore } from "@/store/sidebar-store";
 import { useAuthStore } from "@/store/auth-store";
 import { useNotificationStore } from "@/store/notification-store";
+import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/live-map", icon: MapPin, label: "Live Map" },
-  { href: "/vehicle", icon: Truck, label: "Fleet" },
+  { href: "/fleet", icon: Truck, label: "Fleet" },
   { href: "/scheduler", icon: CalendarClock, label: "Scheduler" },
-  { href: "/notification", icon: Bell, label: "Notifications" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -149,21 +149,25 @@ export function Sidebar() {
           </div>
         )}
         {!collapsed && (
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleLogout}
-            className="shrink-0 p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"
+            className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full cursor-pointer"
             aria-label="Sign out"
             title="Sign out"
           >
             <LogOut size={16} />
-          </button>
+          </Button>
         )}
       </div>
 
       {/* Collapse Toggle Button */}
-      <button
+      <Button
+        variant="outline"
+        size="icon"
         onClick={toggle}
-        className="absolute bottom-20 -right-3.5 z-55 hidden lg:flex items-center justify-center w-7 h-7 bg-card border border-border text-foreground hover:bg-accent rounded-full shadow-md cursor-pointer transition-transform duration-200"
+        className="absolute bottom-20 -right-3.5 z-55 hidden lg:flex w-7 h-7 bg-card text-foreground rounded-full shadow-md cursor-pointer"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {collapsed ? (
@@ -171,7 +175,7 @@ export function Sidebar() {
         ) : (
           <ChevronLeft size={14} strokeWidth={2.5} />
         )}
-      </button>
+      </Button>
     </aside>
   );
 }

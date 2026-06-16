@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, Search, Menu, X, Check, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { useSidebarStore } from "@/store/sidebar-store";
 import { useNotificationStore } from "@/store/notification-store";
 import { useAuthStore } from "@/store/auth-store";
@@ -33,13 +34,15 @@ export function Header() {
     <header className="sticky top-0 z-40 h-20 flex items-center justify-between px-6 bg-card/80 backdrop-blur-md border-b border-border shadow-sm">
       {/* Left */}
       <div className="flex items-center gap-4 min-w-0">
-        <button
-          className="flex items-center justify-center w-10 h-10 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors cursor-pointer"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:text-foreground hover:bg-accent rounded-full cursor-pointer"
           onClick={toggle}
           aria-label="Toggle sidebar"
         >
           <Menu size={20} />
-        </button>
+        </Button>
 
         <div className="min-w-0 select-none">
           <h1 className="text-lg font-semibold text-foreground truncate leading-snug">
@@ -58,18 +61,22 @@ export function Header() {
       {/* Right */}
       <div className="flex items-center gap-2">
         {/* Search */}
-        <button
-          className="flex items-center justify-center w-10 h-10 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors cursor-pointer"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:text-foreground hover:bg-primary rounded-full cursor-pointer"
           aria-label="Search"
         >
           <Search size={18} />
-        </button>
+        </Button>
 
         {/* Notifications Dropdown */}
         <div className="relative">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             className={cn(
-              "relative flex items-center justify-center w-10 h-10 text-muted-foreground hover:text-foreground hover:bg-accent rounded-full transition-colors cursor-pointer",
+              "relative text-muted-foreground hover:text-foreground hover:bg-primary rounded-full cursor-pointer",
               notifOpen && "bg-accent text-foreground",
             )}
             onClick={() => setNotifOpen((v) => !v)}
@@ -79,7 +86,7 @@ export function Header() {
             {unreadCount > 0 && (
               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-destructive rounded-full" />
             )}
-          </button>
+          </Button>
 
           {notifOpen && (
             <>
@@ -97,29 +104,35 @@ export function Header() {
                   </span>
                   <div className="flex items-center gap-1">
                     {unreadCount > 0 && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => markAllRead()}
-                        className="p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent transition-colors"
+                        className="w-8 h-8 text-muted-foreground hover:text-foreground rounded-full hover:bg-primary cursor-pointer"
                         title="Mark all as read"
                       >
                         <Check size={14} />
-                      </button>
+                      </Button>
                     )}
                     {notifications.length > 0 && (
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => clearNotifications()}
-                        className="p-1.5 text-muted-foreground hover:text-destructive rounded-full hover:bg-accent transition-colors"
+                        className="w-8 h-8 text-muted-foreground hover:text-destructive rounded-full hover:bg-primary cursor-pointer"
                         title="Clear all"
                       >
                         <Trash2 size={14} />
-                      </button>
+                      </Button>
                     )}
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setNotifOpen(false)}
-                      className="p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent transition-colors"
+                      className="w-8 h-8 text-muted-foreground hover:text-foreground rounded-full hover:bg-primary cursor-pointer"
                     >
                       <X size={14} />
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -175,16 +188,17 @@ export function Header() {
                 </div>
 
                 {/* Footer view link */}
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     setNotifOpen(false);
                     // navigate to notifications
                     window.location.href = "/notification";
                   }}
-                  className="w-full text-center py-2.5 bg-accent/30 text-xs font-semibold text-primary hover:bg-accent/50 border-t border-border transition-colors select-none"
+                  className="w-full text-center py-5 bg-accent/30 text-xs font-semibold text-primary hover:bg-accent/50 border-t border-border rounded-none cursor-pointer"
                 >
                   View all notifications
-                </button>
+                </Button>
               </div>
             </>
           )}

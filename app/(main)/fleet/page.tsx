@@ -7,6 +7,14 @@ import { Plus, Trash2, Eye, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -15,20 +23,20 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import type { Vehicle } from "@/types/vehicle";
+import type { Fleet } from "@/types/fleet";
 
 export default function FleetPage() {
   const queryClient = useQueryClient();
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [selectedFleet, setSelectedFleet] = useState<Fleet | null>(null);
 
-  // New vehicle form state
-  const [newVehicle, setNewVehicle] = useState({
+  // New fleet form state
+  const [newFleet, setNewFleet] = useState({
     plate: "",
     driver: "",
     route: "",
-    status: "idle" as Vehicle["status"],
+    status: "idle" as Fleet["status"],
     progress: 0,
     cargo: "—",
     eta: "—",
@@ -39,19 +47,19 @@ export default function FleetPage() {
   });
 
   // Queries
-  const { data: vehicles = [], isLoading } = useQuery({
-    queryKey: ["vehicles"],
-    queryFn: apiClient.getVehicles,
+  const { data: fleets = [], isLoading } = useQuery({
+    queryKey: ["fleets"],
+    queryFn: apiClient.getFleets,
   });
 
   // Mutations
   const addMutation = useMutation({
-    mutationFn: apiClient.addVehicle,
+    mutationFn: apiClient.addFleet,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      toast.success("Vehicle registered successfully.");
+      queryClient.invalidateQueries({ queryKey: ["fleets"] });
+      toast.success("Fleet registered successfully.");
       setShowAddForm(false);
-      setNewVehicle({
+      setNewFleet({
         plate: "",
         driver: "",
         route: "",
@@ -68,39 +76,39 @@ export default function FleetPage() {
   });
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: Vehicle["status"] }) =>
-      apiClient.updateVehicleStatus(id, status),
+    mutationFn: ({ id, status }: { id: string; status: Fleet["status"] }) =>
+      apiClient.updateFleetStatus(id, status),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      toast.success("Vehicle status updated.");
+      queryClient.invalidateQueries({ queryKey: ["fleets"] });
+      toast.success("Fleet status updated.");
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: apiClient.removeVehicle,
+    mutationFn: apiClient.removeFleet,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      setSelectedVehicle(null);
-      toast.success("Vehicle decommissioned.");
+      queryClient.invalidateQueries({ queryKey: ["fleets"] });
+      setSelectedFleet(null);
+      toast.success("Fleet decommissioned.");
     },
   });
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newVehicle.plate || !newVehicle.driver || !newVehicle.route) {
+    if (!newFleet.plate || !newFleet.driver || !newFleet.route) {
       toast.error("Please fill in plate, driver, and route.");
       return;
     }
     // Set ETA based on status
-    const eta = newVehicle.status === "on-route" ? "4h 30m" : "—";
-    addMutation.mutate({ ...newVehicle, eta });
+    const eta = newFleet.status === "on-route" ? "4h 30m" : "—";
+    addMutation.mutate({ ...newFleet, eta });
   };
 
-  const handleStatusChange = (id: string, status: Vehicle["status"]) => {
+  const handleStatusChange = (id: string, status: Fleet["status"]) => {
     statusMutation.mutate({ id, status });
   };
 
-  const filteredVehicles = vehicles.filter((v) => {
+  const filteredFleets = fleets.filter((v) => {
     if (filterStatus === "all") return true;
     return v.status === filterStatus;
   });
@@ -122,7 +130,7 @@ export default function FleetPage() {
           className="flex items-center gap-2 rounded-xl text-xs font-semibold px-4 py-2 cursor-pointer self-start sm:self-auto"
         >
           <Plus size={16} />
-          Register Vehicle
+          Register Fleet
         </Button>
       </div>
 
@@ -134,18 +142,19 @@ export default function FleetPage() {
           <div className="flex flex-wrap gap-2 p-1.5 bg-accent/20 border border-border rounded-xl">
             {["all", "on-route", "idle", "maintenance", "delayed"].map(
               (tab) => (
-                <button
+                <Button
                   key={tab}
+                  variant="ghost"
                   onClick={() => setFilterStatus(tab)}
                   className={cn(
                     "px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer",
                     filterStatus === tab
-                      ? "bg-card text-foreground shadow-sm"
+                      ? "bg-card text-foreground shadow-sm hover:bg-card"
                       : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                   )}
                 >
                   {tab.replace("-", " ")}
-                </button>
+                </Button>
               ),
             )}
           </div>
@@ -154,44 +163,44 @@ export default function FleetPage() {
           <div className="bg-card border border-border rounded-2xl shadow-sm overflow-x-auto">
             {isLoading ? (
               <div className="p-8 text-center text-xs text-muted-foreground animate-pulse">
-                Loading vehicles...
+                Loading fleets...
               </div>
-            ) : filteredVehicles.length === 0 ? (
+            ) : filteredFleets.length === 0 ? (
               <div className="p-12 text-center text-xs text-muted-foreground">
-                No vehicles registered in this state.
+                No fleets registered in this state.
               </div>
             ) : (
-              <table className="w-full text-left border-collapse text-xs select-none">
-                <thead>
-                  <tr className="border-b border-border bg-accent/20 text-muted-foreground font-semibold">
-                    <th className="p-4">Plate</th>
-                    <th className="p-4">Driver</th>
-                    <th className="p-4">Route</th>
-                    <th className="p-4">Cargo</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4">Fuel</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {filteredVehicles.map((v) => (
-                    <tr
+              <Table className="w-full text-left text-xs select-none">
+                <TableHeader>
+                  <TableRow className="border-b border-border bg-accent/20 text-muted-foreground font-semibold hover:bg-accent/20">
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Plate</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Driver</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Route</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Cargo</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Status</TableHead>
+                    <TableHead className="p-4 h-auto text-muted-foreground font-semibold">Fuel</TableHead>
+                    <TableHead className="p-4 h-auto text-right text-muted-foreground font-semibold">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className="divide-y divide-border">
+                  {filteredFleets.map((v) => (
+                    <TableRow
                       key={v.id}
-                      onClick={() => setSelectedVehicle(v)}
+                      onClick={() => setSelectedFleet(v)}
                       className={cn(
                         "hover:bg-accent/10 transition-colors cursor-pointer",
-                        selectedVehicle?.id === v.id && "bg-primary/5",
+                        selectedFleet?.id === v.id && "bg-primary/5",
                       )}
                     >
-                      <td className="p-4 font-mono font-bold text-primary">
+                      <TableCell className="p-4 font-mono font-bold text-primary">
                         {v.plate}
-                      </td>
-                      <td className="p-4 font-medium">{v.driver}</td>
-                      <td className="p-4 font-medium text-muted-foreground">
+                      </TableCell>
+                      <TableCell className="p-4 font-medium">{v.driver}</TableCell>
+                      <TableCell className="p-4 font-medium text-muted-foreground">
                         {v.route}
-                      </td>
-                      <td className="p-4 text-muted-foreground">{v.cargo}</td>
-                      <td className="p-4">
+                      </TableCell>
+                      <TableCell className="p-4 text-muted-foreground">{v.cargo}</TableCell>
+                      <TableCell className="p-4">
                         <span
                           className={cn(
                             "px-2 py-0.5 rounded-full text-[10px] font-bold",
@@ -207,8 +216,8 @@ export default function FleetPage() {
                         >
                           {v.status.replace("-", " ")}
                         </span>
-                      </td>
-                      <td className="p-4 font-medium">
+                      </TableCell>
+                      <TableCell className="p-4 font-medium">
                         <span
                           className={cn(
                             v.fuelLevel < 20
@@ -218,23 +227,25 @@ export default function FleetPage() {
                         >
                           {v.fuelLevel}%
                         </span>
-                      </td>
-                      <td
+                      </TableCell>
+                      <TableCell
                         className="p-4 text-right"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="flex gap-2 justify-end">
-                          <button
-                            onClick={() => setSelectedVehicle(v)}
-                            className="p-1 hover:bg-accent rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setSelectedFleet(v)}
+                            className="w-8 h-8 rounded text-muted-foreground hover:text-foreground cursor-pointer"
                             title="Inspect Details"
                           >
-                            <Eye size={14} />
-                          </button>
+                            <Eye size={14} className="hover:text-primary" />
+                          </Button>
                           <Select
                             value={v.status}
                             onValueChange={(val) =>
-                              handleStatusChange(v.id, val as Vehicle["status"])
+                              handleStatusChange(v.id, val as Fleet["status"])
                             }
                           >
                             <SelectTrigger className="w-24 h-7 text-[10px] rounded-lg">
@@ -259,31 +270,33 @@ export default function FleetPage() {
                             </SelectContent>
                           </Select>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             )}
           </div>
         </div>
 
         {/* Floating Forms / Details cards */}
-        {(showAddForm || selectedVehicle) && (
+        {(showAddForm || selectedFleet) && (
           <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
             {/* Form layout */}
             {showAddForm && (
               <div className="p-5 border border-border bg-card rounded-2xl shadow-lg flex flex-col gap-4 animate-in slide-in-from-right-3 duration-200">
                 <div className="flex items-center justify-between border-b border-border pb-3 select-none">
                   <h3 className="font-bold text-sm text-foreground">
-                    Register Vehicle
+                    Register Fleet
                   </h3>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setShowAddForm(false)}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="w-8 h-8 text-muted-foreground hover:text-foreground"
                   >
                     <X size={16} />
-                  </button>
+                  </Button>
                 </div>
                 <form
                   onSubmit={handleAddSubmit}
@@ -295,9 +308,9 @@ export default function FleetPage() {
                     </label>
                     <Input
                       placeholder="e.g. LGT-5022"
-                      value={newVehicle.plate}
+                      value={newFleet.plate}
                       onChange={(e) =>
-                        setNewVehicle({ ...newVehicle, plate: e.target.value })
+                        setNewFleet({ ...newFleet, plate: e.target.value })
                       }
                       className="h-9 text-xs"
                       required
@@ -309,9 +322,9 @@ export default function FleetPage() {
                     </label>
                     <Input
                       placeholder="e.g. Emeka Okafor"
-                      value={newVehicle.driver}
+                      value={newFleet.driver}
                       onChange={(e) =>
-                        setNewVehicle({ ...newVehicle, driver: e.target.value })
+                        setNewFleet({ ...newFleet, driver: e.target.value })
                       }
                       className="h-9 text-xs"
                       required
@@ -323,9 +336,9 @@ export default function FleetPage() {
                     </label>
                     <Input
                       placeholder="e.g. Lagos → Kano"
-                      value={newVehicle.route}
+                      value={newFleet.route}
                       onChange={(e) =>
-                        setNewVehicle({ ...newVehicle, route: e.target.value })
+                        setNewFleet({ ...newFleet, route: e.target.value })
                       }
                       className="h-9 text-xs"
                       required
@@ -337,9 +350,9 @@ export default function FleetPage() {
                     </label>
                     <Input
                       placeholder="e.g. Construction Materials"
-                      value={newVehicle.cargo}
+                      value={newFleet.cargo}
                       onChange={(e) =>
-                        setNewVehicle({ ...newVehicle, cargo: e.target.value })
+                        setNewFleet({ ...newFleet, cargo: e.target.value })
                       }
                       className="h-9 text-xs"
                     />
@@ -349,9 +362,12 @@ export default function FleetPage() {
                       Initial Status
                     </label>
                     <Select
-                      value={newVehicle.status}
+                      value={newFleet.status}
                       onValueChange={(val) =>
-                        setNewVehicle({ ...newVehicle, status: val as Vehicle["status"] })
+                        setNewFleet({
+                          ...newFleet,
+                          status: val as Fleet["status"],
+                        })
                       }
                     >
                       <SelectTrigger className="h-9 text-xs">
@@ -384,39 +400,41 @@ export default function FleetPage() {
             )}
 
             {/* Inspect Details panel */}
-            {selectedVehicle && !showAddForm && (
+            {selectedFleet && !showAddForm && (
               <div className="p-5 border border-border bg-card rounded-2xl shadow-lg flex flex-col gap-4 animate-in slide-in-from-right-3 duration-200">
                 <div className="flex items-center justify-between border-b border-border pb-3 select-none">
                   <h3 className="font-bold text-sm text-foreground">
                     Unit Telemetry
                   </h3>
-                  <button
-                    onClick={() => setSelectedVehicle(null)}
-                    className="text-muted-foreground hover:text-foreground"
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedFleet(null)}
+                    className="w-8 h-8 text-muted-foreground hover:text-foreground"
                   >
                     <X size={16} />
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-between items-center bg-accent/25 p-3 rounded-xl">
                     <span className="text-xs font-mono font-bold text-primary">
-                      {selectedVehicle.plate}
+                      {selectedFleet.plate}
                     </span>
                     <span
                       className={cn(
                         "px-2 py-0.5 rounded-full text-[10px] font-bold",
-                        selectedVehicle.status === "on-route" &&
+                        selectedFleet.status === "on-route" &&
                           "text-blue-600 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-500/5",
-                        selectedVehicle.status === "idle" &&
+                        selectedFleet.status === "idle" &&
                           "text-zinc-600 bg-zinc-500/10 dark:text-zinc-400 dark:bg-zinc-500/5",
-                        selectedVehicle.status === "delayed" &&
+                        selectedFleet.status === "delayed" &&
                           "text-destructive bg-destructive/10 dark:bg-destructive/5",
-                        selectedVehicle.status === "maintenance" &&
+                        selectedFleet.status === "maintenance" &&
                           "text-amber-600 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-500/5",
                       )}
                     >
-                      {selectedVehicle.status.replace("-", " ")}
+                      {selectedFleet.status.replace("-", " ")}
                     </span>
                   </div>
 
@@ -425,7 +443,7 @@ export default function FleetPage() {
                       Driver Profile
                     </span>
                     <span className="text-xs font-bold text-foreground">
-                      {selectedVehicle.driver}
+                      {selectedFleet.driver}
                     </span>
                   </div>
 
@@ -434,7 +452,7 @@ export default function FleetPage() {
                       Assigned Cargo
                     </span>
                     <span className="text-xs font-semibold text-foreground">
-                      {selectedVehicle.cargo}
+                      {selectedFleet.cargo}
                     </span>
                   </div>
 
@@ -443,18 +461,18 @@ export default function FleetPage() {
                       Trip Progress
                     </span>
                     <span className="text-xs text-muted-foreground font-semibold">
-                      {selectedVehicle.route}
+                      {selectedFleet.route}
                     </span>
-                    {selectedVehicle.progress > 0 && (
+                    {selectedFleet.progress > 0 && (
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                           <div
                             className="h-full bg-primary rounded-full"
-                            style={{ width: `${selectedVehicle.progress}%` }}
+                            style={{ width: `${selectedFleet.progress}%` }}
                           />
                         </div>
                         <span className="text-[10px] font-bold text-muted-foreground">
-                          {selectedVehicle.progress}%
+                          {selectedFleet.progress}%
                         </span>
                       </div>
                     )}
@@ -466,7 +484,7 @@ export default function FleetPage() {
                         Speed
                       </p>
                       <p className="text-xs font-bold text-foreground mt-0.5">
-                        {selectedVehicle.speed} km/h
+                        {selectedFleet.speed} km/h
                       </p>
                     </div>
                     <div>
@@ -474,28 +492,28 @@ export default function FleetPage() {
                         Fuel Level
                       </p>
                       <p className="text-xs font-bold text-foreground mt-0.5">
-                        {selectedVehicle.fuelLevel}%
+                        {selectedFleet.fuelLevel}%
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-border/80">
                     <span>
-                      ETA: <strong>{selectedVehicle.eta}</strong>
+                      ETA: <strong>{selectedFleet.eta}</strong>
                     </span>
                     <span>
-                      Updated: <strong>{selectedVehicle.lastUpdated}</strong>
+                      Updated: <strong>{selectedFleet.lastUpdated}</strong>
                     </span>
                   </div>
 
                   <Button
-                    onClick={() => deleteMutation.mutate(selectedVehicle.id)}
+                    onClick={() => deleteMutation.mutate(selectedFleet.id)}
                     disabled={deleteMutation.isPending}
                     variant="destructive"
                     className="w-full mt-2 h-9 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Trash2 size={14} />
-                    Decommission Vehicle
+                    Decommission Fleet
                   </Button>
                 </div>
               </div>

@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Button } from "@/components/ui/button";
 import type { ShipmentPoint } from "@/types/dashboard";
 
 interface Props {
@@ -30,9 +31,9 @@ export function ShipmentChart({ data }: Props) {
           <h3 className="text-[15px] font-bold text-foreground">Shipment Volume</h3>
           <p className="text-xs text-muted-foreground mt-0.5">Last 30 days overview</p>
         </div>
-        <button className="px-3 py-1.5 text-xs font-semibold bg-accent hover:bg-accent/80 text-foreground border border-border rounded-lg transition-colors cursor-pointer">
+        <Button className="h-8 px-3 text-xs shadow-sm cursor-pointer">
           Export
-        </button>
+        </Button>
       </div>
 
       <div className="py-6 h-[260px] w-full">

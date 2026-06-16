@@ -207,28 +207,30 @@ export default function ForgotPasswordPage() {
             <div className="text-center">
               <p className="text-xs text-muted-foreground font-medium mt-1">
                 Didn&apos;t receive a code?{" "}
-                <button
+                <Button
+                  variant="link"
                   type="button"
                   id="forgot-resend"
                   onClick={handleResend}
                   disabled={resendCooldown > 0}
-                  className="font-semibold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="font-semibold text-primary hover:underline inline-flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0 disabled:opacity-50 disabled:cursor-not-allowed h-auto"
                 >
                   <RefreshCw size={12} className={resendCooldown > 0 ? "" : "animate-spin-slow"} />
                   {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
-                </button>
+                </Button>
               </p>
             </div>
 
             <p className="text-center text-xs text-muted-foreground font-medium mt-1">
-              <button
+              <Button
+                variant="link"
                 type="button"
                 onClick={() => setStep("email")}
-                className="font-semibold text-primary hover:underline inline-flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0"
+                className="font-semibold text-primary hover:underline inline-flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 h-auto"
               >
                 <ArrowLeft size={13} />
                 Change email
-              </button>
+              </Button>
             </p>
           </>
         )}

@@ -22,7 +22,7 @@ export interface DeliveryStatus {
   color: string;
 }
 
-export interface Vehicle {
+export interface Fleet {
   id: string;
   plate: string;
   driver: string;
@@ -39,5 +39,5 @@ export interface ActivityEvent {
   title: string;
   description: string;
   timestamp: string;
-  vehicle?: string;
+  fleet?: string;
 }

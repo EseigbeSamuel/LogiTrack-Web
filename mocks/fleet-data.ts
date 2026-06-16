@@ -1,6 +1,6 @@
-import type { Vehicle } from "@/types/vehicle";
+import type { Fleet } from "@/types/fleet";
 
-export const fleetVehicles: Vehicle[] = [
+export const fleetFleets: Fleet[] = [
   {
     id: "v-001",
     plate: "LGT-4821",
